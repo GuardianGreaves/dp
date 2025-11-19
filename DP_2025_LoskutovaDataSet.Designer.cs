@@ -6315,7 +6315,7 @@ SELECT ID_Мероприятия, ID_Пользователя, ID_Типа, На
             this._commandCollection[0].CommandType = global::System.Data.CommandType.Text;
             this._commandCollection[1] = new global::System.Data.SqlClient.SqlCommand();
             this._commandCollection[1].Connection = this.Connection;
-            this._commandCollection[1].CommandText = @"SELECT        М.ID_Мероприятия, М.ID_Пользователя, М.ID_Типа, П.Фамилия AS ИмяПользователя, Т.Название AS ТипМероприятия, М.Название, М.Описание, М.Дата_Мероприятия, М.Бюджет
+            this._commandCollection[1].CommandText = @"SELECT        М.ID_Мероприятия, М.ID_Пользователя, М.ID_Типа, П.Фамилия AS ИмяПользователя, Т.[Название] AS ТипМероприятия, М.Название, М.Описание, М.Дата_Мероприятия, М.Бюджет
 FROM            МЕРОПРИЯТИЕ AS М INNER JOIN
                          ПОЛЬЗОВАТЕЛЬ AS П ON М.ID_Пользователя = П.ID_Пользователя INNER JOIN
                          ТИП_МЕРОПРИЯТИЯ AS Т ON М.ID_Типа = Т.ID_Типа";
