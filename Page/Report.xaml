@@ -24,6 +24,9 @@
             <Button Style="{StaticResource ButtomMenu}" Height="30" Grid.Row="0" HorizontalAlignment="Left" Click="Button_Click">
                 <TextBlock x:Name="BtnWord" FontSize="15" Text="Экспорт в Word"/>
             </Button>
+            <Button Style="{StaticResource ButtomMenu}" Height="30" Grid.Row="0" HorizontalAlignment="Left" Click="Button_Click_1">
+                <TextBlock x:Name="BtnExcel" FontSize="15" Text="Экспорт в Excel"/>
+            </Button>
         </StackPanel>
 
         <Grid Grid.Row="2">

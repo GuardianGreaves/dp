@@ -121,5 +121,11 @@ namespace diplom_loskutova.Page
             ExportWord exportWord = new ExportWord();
             exportWord.export(currentSqlQuery, ""); // передаем текущий SQL-запрос
         }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            ExportExcel exportExcel = new ExportExcel();
+            exportExcel.export(currentSqlQuery); // передаем текущий SQL-запрос
+        }
     }
 }
