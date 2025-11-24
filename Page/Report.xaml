@@ -21,7 +21,9 @@
         </Button>
 
         <StackPanel Grid.Row="1" Background="AntiqueWhite" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <TextBlock Text="Тут будут блоки с кол-во чего то"/>
+            <Button Style="{StaticResource ButtomMenu}" Height="30" Grid.Row="0" HorizontalAlignment="Left" Click="Button_Click">
+                <TextBlock x:Name="BtnWord" FontSize="15" Text="Экспорт в Word"/>
+            </Button>
         </StackPanel>
 
         <Grid Grid.Row="2">

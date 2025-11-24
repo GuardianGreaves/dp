@@ -10,7 +10,7 @@ public class DbHelper
     // Конструктор без параметров - берет строку подключения из App.config по имени "MyConnectionString"
     public DbHelper()
     {
-        connectionString = ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_Loskutova"].ConnectionString;
+        connectionString = ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString;
     }
 
     // Конструктор с передачей строки подключения вручную

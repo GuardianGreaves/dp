@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace DiplomLibrary.Export
+namespace diplom_lib_loskutova.Export
 {
     public class ExportWord
     {
@@ -129,7 +129,7 @@ namespace DiplomLibrary.Export
                 MessageBox.Show("No data to export!");
             }
         }
-        
+
         public void ExportToWordRevers(DataTable dataTable, string message = "")
         {
             if (dataTable.Rows.Count > 0)

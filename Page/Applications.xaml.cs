@@ -183,10 +183,10 @@ namespace diplom_loskutova.Page
 
         private void LoadToComboBox()
         {
-            var userAdapter = new DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter();
+            var userAdapter = new DP_2025_LoskutovaDataSetTableAdapters.ГРАЖДАНИНTableAdapter();
             var usersTable = userAdapter.GetData();
             usersTable.Columns.Add("FullName", typeof(string), "Фамилия + ' ' + Имя + ' ' + Отчество");
-            ComboBoxHelper.LoadData(ComboBoxSearchFIO, usersTable, "FullName", "ID_Пользователя");
+            ComboBoxHelper.LoadData(ComboBoxSearchFIO, usersTable, "FullName", "ID_Гражданина");
 
             var statusAdapter = new DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter();
             ComboBoxHelper.LoadData(ComboBoxSearchStatus, statusAdapter.GetData(), "Название", "ID_Статуса");
