@@ -235,6 +235,9 @@
     <Compile Include="Page\Applications.xaml.cs">
       <DependentUpon>Applications.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Page\Authorization.xaml.cs">
+      <DependentUpon>Authorization.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Page\Citizens.xaml.cs">
       <DependentUpon>Citizens.xaml</DependentUpon>
     </Compile>
@@ -261,6 +264,9 @@
     </Compile>
     <Compile Include="Styles\Button.xaml.cs">
       <DependentUpon>Button.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="WindowAuthorization.xaml.cs">
+      <DependentUpon>WindowAuthorization.xaml</DependentUpon>
     </Compile>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -306,6 +312,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Page\Authorization.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Page\Citizens.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -339,6 +349,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\Button.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="WindowAuthorization.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

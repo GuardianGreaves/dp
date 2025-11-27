@@ -10,7 +10,6 @@ namespace diplom_loskutova.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.ТИП_МЕРОПРИЯТИЯTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ТИП_МЕРОПРИЯТИЯTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
-        public event EventHandler OpenPageTypeEventAOC;    // Событие для открытия страницы редактирования
         public TypeEvent()
         {
             InitializeComponent();

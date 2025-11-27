@@ -19,6 +19,37 @@ public class DbHelper
         this.connectionString = connectionString;
     }
 
+    public (int count, string name) CheckUser(string login, string password)
+    {
+        int count = 0;
+        string name = null;
+        string query = @"
+                        SELECT 
+                            COUNT(*) AS UserCount,
+                            (SELECT TOP 1 Фамилия + ' ' + Имя + ' ' + Отчество FROM ПОЛЬЗОВАТЕЛЬ WHERE Логин LIKE @login AND Пароль = @password) AS UserName
+                        FROM ПОЛЬЗОВАТЕЛЬ 
+                        WHERE Логин LIKE @login AND Пароль = @password";
+
+        using (SqlConnection con = new SqlConnection(connectionString))
+        using (SqlCommand cmd = new SqlCommand(query, con))
+        {
+            cmd.Parameters.AddWithValue("@login", login);
+            cmd.Parameters.AddWithValue("@password", password);
+            con.Open();
+
+            using (var reader = cmd.ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    count = reader.GetInt32(0);
+                    if (!reader.IsDBNull(1))
+                        name = reader.GetString(1);
+                }
+            }
+        }
+        return (count, name);
+    }
+
     // Выполнить запрос и вернуть DataTable
     public DataTable ExecuteQuery(string query)
     {

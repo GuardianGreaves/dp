@@ -27,7 +27,7 @@ namespace diplom_loskutova.Properties {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.ConnectionString)]
         [global::System.Configuration.DefaultSettingValueAttribute("Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DP_2025_Loskutova;Integrated S" +
-            "ecurity=True;Encrypt=True")]
+            "ecurity=True")]
         public string DP_2025_LoskutovaConnectionString {
             get {
                 return ((string)(this["DP_2025_LoskutovaConnectionString"]));

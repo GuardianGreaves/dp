@@ -15,7 +15,6 @@ namespace diplom_loskutova.Page.AddOrChange
 
         // События для уведомления об изменениях данных и открытии страницы 
         public event EventHandler DataChanged;
-        public event EventHandler OpenPageUsers;
 
         // Флаг для определения операции: изменение (true) или добавление (false)
         public bool ChangeOrAdd = false;

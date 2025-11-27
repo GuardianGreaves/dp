@@ -9,7 +9,6 @@ namespace diplom_loskutova.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
-        public event EventHandler OpenPageStatusAOC;    // Событие для открытия страницы редактирования
 
         public Status()
         {

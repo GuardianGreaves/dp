@@ -12,7 +12,6 @@ namespace diplom_loskutova.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
-        public event EventHandler OpenPageUsersAOC;    // Событие для открытия страницы редактирования
         public Users()
         {
             InitializeComponent();

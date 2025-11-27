@@ -16,14 +16,20 @@
         Background="#fff">
 
     <DockPanel LastChildFill="True" Background="White">
-        <Grid ClipToBounds="True" DockPanel.Dock="Top" Height="40">
+        <Grid ClipToBounds="True" DockPanel.Dock="Top">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
+            <TextBlock x:Name="nameUser" VerticalAlignment="Center" FontSize="16" Margin="10 0 0 0" Grid.Row="0" Text="Иванов Иван Иванович"/>
+
             <!-- Меню -->
-            <StackPanel Orientation="Horizontal" Grid.Column="0">
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
                 <Button Style="{StaticResource ButtomMenu}" Content="Заявки" Click="ButtonOpenPageApplication"/>
                 <Button Style="{StaticResource ButtomMenu}" Content="Мероприятия" Click="ButtonOpenPageEvent"/>
                 <Button Style="{StaticResource ButtomMenu}" Content="Граждане" Click="ButtonOpenPageCitizen"/>
@@ -35,7 +41,7 @@
             </StackPanel>
 
             <!-- Контроль окна -->
-            <StackPanel Margin="0 0 10 0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+            <StackPanel Margin="0 0 10 0" Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
                 <Button Style="{StaticResource ButtonWindowControl}" Width="30" Height="30" Click="Minimize_Click">
                     <iconPacks:PackIconMaterial Kind="WindowMinimize" />
                 </Button>
