@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Data;
+using System.Web.Security;
 using System.Windows;
 using System.Windows.Input;
 
@@ -10,10 +11,13 @@ namespace diplom_loskutova.Page
         private DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
 
-        public Status()
+        public Status(string _role)
         {
             InitializeComponent();
             LoadData();    // Загружаем данные при инициализации страницы
+
+            var visibilityManager = new Class.RoleVisibilityManager(_role);
+            visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
         }
 
         // Загружает данные из базы в DataSet и привязывает к ListView.

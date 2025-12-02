@@ -12,9 +12,10 @@ namespace diplom_loskutova.Page
 
         private void SignIn_Click(object sender, RoutedEventArgs e)
         {
-            Encrypt encryptClass = new Encrypt();
-            var encryptLogin = encryptClass.encrypt(TextBoxLogin.Text.Trim());
-            var encryptPassword = encryptClass.encrypt(TextBoxPassword.Password.Trim());
+            // Используем новый класс шифрования скремблер
+            ScramblerEncryptor encryptor = new ScramblerEncryptor("13371337");
+            var encryptLogin = encryptor.Encrypt(TextBoxLogin.Text.Trim());
+            var encryptPassword = encryptor.Encrypt(TextBoxPassword.Password.Trim());
 
             if (string.IsNullOrEmpty(encryptLogin) || string.IsNullOrEmpty(encryptPassword))
             {
@@ -28,8 +29,7 @@ namespace diplom_loskutova.Page
             if (result.count > 0)
             {
                 MessageBox.Show("Авторизация успешна.");
-                MainWindow newWindow = new MainWindow();
-                newWindow.nameUser.Text = result.name;
+                MainWindow newWindow = new MainWindow(result.name, result.role);
                 newWindow.Show();
                 Application.Current.MainWindow.Close();
             }

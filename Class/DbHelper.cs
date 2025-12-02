@@ -19,16 +19,19 @@ public class DbHelper
         this.connectionString = connectionString;
     }
 
-    public (int count, string name) CheckUser(string login, string password)
+    public (int count, string name, string role) CheckUser(string login, string password)
     {
         int count = 0;
         string name = null;
+        string role = null;
+
         string query = @"
-                        SELECT 
-                            COUNT(*) AS UserCount,
-                            (SELECT TOP 1 Фамилия + ' ' + Имя + ' ' + Отчество FROM ПОЛЬЗОВАТЕЛЬ WHERE Логин LIKE @login AND Пароль = @password) AS UserName
-                        FROM ПОЛЬЗОВАТЕЛЬ 
-                        WHERE Логин LIKE @login AND Пароль = @password";
+        SELECT 
+            COUNT(*) OVER() AS UserCount,
+            Фамилия + ' ' + Имя + ' ' + Отчество AS UserName,
+            CAST(ID_Роли AS NVARCHAR) AS Role
+        FROM ПОЛЬЗОВАТЕЛЬ 
+        WHERE Логин = @login AND Пароль = @password";
 
         using (SqlConnection con = new SqlConnection(connectionString))
         using (SqlCommand cmd = new SqlCommand(query, con))
@@ -44,10 +47,12 @@ public class DbHelper
                     count = reader.GetInt32(0);
                     if (!reader.IsDBNull(1))
                         name = reader.GetString(1);
+                    if (!reader.IsDBNull(2))
+                        role = reader.GetString(2);
                 }
             }
         }
-        return (count, name);
+        return (count, name, role);
     }
 
     // Выполнить запрос и вернуть DataTable

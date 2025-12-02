@@ -26,8 +26,12 @@
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <TextBlock x:Name="nameUser" VerticalAlignment="Center" FontSize="16" Margin="10 0 0 0" Grid.Row="0" Text="Иванов Иван Иванович"/>
-
+            <StackPanel Orientation="Horizontal">
+                <Button Style="{StaticResource ButtomMenu}" Content="Выход" Click="Button_Click" />
+                <TextBlock x:Name="nameUser" VerticalAlignment="Center" FontSize="16" Margin="10 0 0 0" Grid.Row="0" Text="Иванов Иван Иванович"/>
+                <TextBlock x:Name="nameRole" Foreground="Gray" VerticalAlignment="Center" FontSize="16" Margin="10 0 0 0" Grid.Row="0" Text="(ограниченный доступ)"/>
+            </StackPanel>
+            
             <!-- Меню -->
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
                 <Button Style="{StaticResource ButtomMenu}" Content="Заявки" Click="ButtonOpenPageApplication"/>

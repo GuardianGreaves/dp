@@ -10,10 +10,13 @@ namespace diplom_loskutova.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.ГРАЖДАНИНTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ГРАЖДАНИНTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
-        public Citizens()
+        public Citizens(string _role)
         {
             InitializeComponent();
             LoadData();
+
+            var visibilityManager = new Class.RoleVisibilityManager(_role);
+            visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
         }
 
         // Загружает данные из базы в DataSet и привязывает к ListView.

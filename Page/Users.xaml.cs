@@ -12,11 +12,14 @@ namespace diplom_loskutova.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
-        public Users()
+        public Users(string _role)
         {
             InitializeComponent();
             LoadData();
             LoadRolesToComboBox();
+
+            var visibilityManager = new Class.RoleVisibilityManager(_role);
+            visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
         }
 
         // Загружает данные из базы в DataSet и привязывает к ListView.

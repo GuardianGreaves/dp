@@ -1,42 +1,73 @@
 ﻿namespace diplom_lib_loskutova.Encryption
 {
-        public class Decrypt
+    public class ScramblerDecryptor
     {
-        public string decrypt(string ciphertext)
-        {
-            string key = "13371337", k2 = "", lpst_c = "", st_k = "";
-            string Alphabet = " яюэыьъщшчцхфутсрпонмлкйизжёедгвбаЯЮЭЫЬЪЩШЧЦХФУТСРПОНМЛКЙИЗЖЁЕДГВБАzyxwvutsrqponmlkjihgfedcbaZYXWVUTSRQPONMLKJIHGFEDCBA9876543210!@#$%^&*()-=_+[]{}|;':,/.<>?";
-            int j = 0, ki = 0, ki_k1 = 0;
+        protected string key = "13371337";
+        protected string alphabet = "?><./,:';|{}[]+_=-()*&^%$#@!0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "abcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщъьыэюя ";
 
-            for (int i = 0; i <= ciphertext.Length - 1; i++)
+        public ScramblerDecryptor() { }
+
+        public ScramblerDecryptor(string customKey)
+        {
+            if (!string.IsNullOrEmpty(customKey))
+                key = customKey;
+        }
+
+        ~ScramblerDecryptor()
+        {
+            // Деструктор для освобождения ресурсов
+        }
+
+        // Свойство для ключа (должно совпадать с ключом шифратора!)
+        public string Key
+        {
+            get { return key; }
+            set
             {
-                k2 += key[j];
+                if (!string.IsNullOrEmpty(value))
+                    key = value;
+            }
+        }
+
+        // Метод дешифрования - обратный алгоритм скремблера
+        public string Decrypt(string encryptedText)
+        {
+            if (string.IsNullOrEmpty(encryptedText))
+                return string.Empty;
+
+            string extendedKey = "", decryptedText = "";
+
+            // Расширяем ключ до длины зашифрованного текста
+            int j = 0;
+            for (int i = 0; i < encryptedText.Length; i++)
+            {
+                extendedKey += key[j];
                 j++;
-                if (j > key.Length - 1)
+                if (j >= key.Length)
                     j = 0;
             }
 
-            for (int i = 0; i <= ciphertext.Length - 1; i++)
+            // Дешифрование каждой буквы
+            for (int i = 0; i < encryptedText.Length; i++)
             {
-                for (int k1Index = 0; k1Index <= Alphabet.Length - 1; k1Index++)
+                for (int alphabetIndex = 0; alphabetIndex < alphabet.Length; alphabetIndex++)
                 {
-                    if (ciphertext[i] == Alphabet[k1Index])
+                    if (encryptedText[i] == alphabet[alphabetIndex])
                     {
-                        st_k = k2[i].ToString();
-                        ki = int.Parse(st_k);
-                        ki_k1 = k1Index + ki;
+                        int keyDigit = int.Parse(extendedKey[i].ToString());
+                        int decryptedIndex = alphabetIndex - keyDigit;
 
-                        if (ki_k1 > Alphabet.Length - 1)
-                        {
-                            ki_k1 = (ki_k1 - Alphabet.Length);
-                        }
+                        // Если индекс стал отрицательным - переносим в конец алфавита
+                        if (decryptedIndex < 0)
+                            decryptedIndex += alphabet.Length;
 
-                        st_k = Alphabet[ki_k1].ToString();
-                        lpst_c += st_k;
+                        decryptedText += alphabet[decryptedIndex];
+                        break;
                     }
                 }
             }
-            return lpst_c;
+            return decryptedText;
         }
     }
 }

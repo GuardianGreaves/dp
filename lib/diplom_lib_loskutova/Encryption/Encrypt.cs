@@ -1,43 +1,66 @@
 ﻿namespace diplom_lib_loskutova.Encryption
 {
-    public class Encrypt
+    public class ScramblerEncryptor
     {
-        public string encrypt(string inputtext)
-        {
-            string key = "13371337", k2 = "", lpst_c = "", st_k = "";
-            string Alphabet = "?><./,:';|{}[]+_=-()*&^%$#@!0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZab" +
-                "cdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщъьыэюя ";
-            int j = 0, ki = 0, ki_k1 = 0;
+        protected string key = "13371337";
+        protected string alphabet = "?><./,:';|{}[]+_=-()*&^%$#@!0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+            "abcdefghijklmnopqrstuvwxyzАБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЬЫЭЮЯабвгдеёжзийклмнопрстуфхцчшщъьыэюя ";
 
-            for (int i = 0; i <= inputtext.Length - 1; i++)
+        public ScramblerEncryptor() { }
+
+        public ScramblerEncryptor(string customKey)
+        {
+            if (!string.IsNullOrEmpty(customKey))
+                key = customKey;
+        }
+
+        // Свойство для ключа
+        public string Key
+        {
+            get { return key; }
+            set
             {
-                k2 += key[j];
+                if (!string.IsNullOrEmpty(value))
+                    key = value;
+            }
+        }
+
+        // Метод шифрования - скремблер с подстановочным ключом
+        public string Encrypt(string inputText)
+        {
+            if (string.IsNullOrEmpty(inputText))
+                return string.Empty;
+
+            string extendedKey = "", encryptedText = "";
+
+            // Расширяем ключ до длины входного текста
+            int j = 0;
+            for (int i = 0; i < inputText.Length; i++)
+            {
+                extendedKey += key[j];
                 j++;
-                if (j > key.Length - 1)
+                if (j >= key.Length)
                     j = 0;
             }
 
-            for (int i = 0; i <= inputtext.Length - 1; i++)
+            // Шифрование каждой буквы методом скремблера
+            for (int i = 0; i < inputText.Length; i++)
             {
-                for (int k1Index = 0; k1Index <= Alphabet.Length - 1; k1Index++)
+                for (int alphabetIndex = 0; alphabetIndex < alphabet.Length; alphabetIndex++)
                 {
-                    if (inputtext[i] == Alphabet[k1Index])
+                    if (inputText[i] == alphabet[alphabetIndex])
                     {
-                        st_k = k2[i].ToString();
-                        ki = int.Parse(st_k);
-                        ki_k1 = k1Index + ki;
+                        int keyDigit = int.Parse(extendedKey[i].ToString());
+                        int encryptedIndex = alphabetIndex + keyDigit;
+                        if (encryptedIndex >= alphabet.Length)
+                            encryptedIndex -= alphabet.Length;
 
-                        if (ki_k1 > Alphabet.Length - 1)
-                        {
-                            ki_k1 = (ki_k1 - Alphabet.Length);
-                        }
-
-                        st_k = Alphabet[ki_k1].ToString();
-                        lpst_c += st_k;
+                        encryptedText += alphabet[encryptedIndex];
+                        break;
                     }
                 }
             }
-            return lpst_c;
+            return encryptedText;
         }
     }
 }

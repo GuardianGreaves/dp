@@ -33,5 +33,16 @@ namespace diplom_loskutova.Class
             row["ID_Роли"] = id;
             return true;
         }
+
+        public string GetNameById(int id)
+        {
+            var table = adapter.GetData();
+            var row = table.FirstOrDefault(r => r.ID_Роли == id);
+            if (row != null)
+            {
+                return row.Название;
+            }
+            return null; // или пустая строка ""
+        }
     }
 }
