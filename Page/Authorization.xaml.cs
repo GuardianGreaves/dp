@@ -5,6 +5,7 @@ namespace diplom_loskutova.Page
 {
     public partial class Authorization : System.Windows.Controls.Page
     {
+        int errorLogIn;
         public Authorization()
         {
             InitializeComponent();
@@ -19,7 +20,16 @@ namespace diplom_loskutova.Page
 
             if (string.IsNullOrEmpty(encryptLogin) || string.IsNullOrEmpty(encryptPassword))
             {
-                MessageBox.Show("Введите логин и пароль.");
+                errorLogIn++;
+                if (errorLogIn > 3)
+                {
+                    MessageBox.Show("Больше 3 неудачных попыток, введите капчу");
+                    diplom_loskutova.Page.Captcha page;
+                    page = new diplom_loskutova.Page.Captcha();
+                    NavigationService.Navigate(page);
+                }
+                else
+                    MessageBox.Show("Введите логин и пароль.");
                 return;
             }
 
@@ -35,7 +45,16 @@ namespace diplom_loskutova.Page
             }
             else
             {
-                MessageBox.Show("Неверный логин или пароль.");
+                errorLogIn++;
+                if (errorLogIn > 3)
+                {
+                    MessageBox.Show("Больше 3 неудачных попыток, введите капчу");
+                    diplom_loskutova.Page.Captcha page;
+                    page = new diplom_loskutova.Page.Captcha();
+                    NavigationService.Navigate(page);
+                }
+                else
+                    MessageBox.Show("Неверный логин или пароль.");
             }
         }
 

@@ -9,7 +9,7 @@
         Width="710" Height="460" WindowStartupLocation="CenterScreen" Background="Transparent" AllowsTransparency="True" WindowStyle="None">
     <Grid>
             <DockPanel Background="#f2f2f2">
-                <Frame Grid.Row="1" x:Name="mainFrame" NavigationUIVisibility="Hidden" />
+                <Frame Grid.Row="1" x:Name="mainFrame" NavigationUIVisibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center" />
             </DockPanel>
     </Grid>
 </Window>

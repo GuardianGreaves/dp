@@ -239,6 +239,9 @@
     <Compile Include="Page\Authorization.xaml.cs">
       <DependentUpon>Authorization.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Page\Captcha.xaml.cs">
+      <DependentUpon>Captcha.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Page\Citizens.xaml.cs">
       <DependentUpon>Citizens.xaml</DependentUpon>
     </Compile>
@@ -314,6 +317,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Page\Authorization.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Page\Captcha.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

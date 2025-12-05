@@ -1,0 +1,17 @@
+﻿<Page x:Class="diplom_loskutova.Page.Captcha"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+      Title="Captcha">
+
+    <Grid Width="250">
+        <StackPanel>
+            <StackPanel Orientation="Horizontal">
+                <Image x:Name="captchaImage" Height="30" Width="200" Margin="5"/>
+                <Button Content="rebot" Height="30" Width="30" Margin="5" Click="Button_Click"/>
+            </StackPanel>
+            <TextBox x:Name="textBoxCaptcha" Height="30" Margin="5"/>
+            <Button Content="Войти" Height="30" Margin="5" Click="Button_Click_1"/>
+        </StackPanel>
+    </Grid>
+</Page>
