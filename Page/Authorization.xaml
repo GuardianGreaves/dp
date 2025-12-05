@@ -14,11 +14,6 @@
                 <RowDefinition Height="auto"/>
             </Grid.RowDefinitions>
 
-            <Button Grid.Row="0" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Center" BorderThickness="0" Foreground="Gray"
-                    Height="24" Width="24">
-                <iconPacks:PackIconMaterial Kind="Close"/>
-            </Button>
-
             <TextBlock Margin="10" Text="Авторизация" Foreground="Pink" Grid.Row="1" 
                        VerticalAlignment="Bottom" HorizontalAlignment="Center"
                        FontSize="40" FontWeight="SemiBold"/>

@@ -8,8 +8,15 @@
         mc:Ignorable="d"
         Width="710" Height="460" WindowStartupLocation="CenterScreen" Background="Transparent" AllowsTransparency="True" WindowStyle="None">
     <Grid>
-            <DockPanel Background="#f2f2f2">
+        
+
+        <DockPanel Grid.Row="1" Background="#f2f2f2">
                 <Frame Grid.Row="1" x:Name="mainFrame" NavigationUIVisibility="Hidden" HorizontalAlignment="Center" VerticalAlignment="Center" />
-            </DockPanel>
+        </DockPanel>
+        <Button Grid.Row="0" Background="Transparent" HorizontalAlignment="Right" VerticalAlignment="Top" BorderThickness="0" Foreground="Gray"
+                    Height="24" Width="24" Click="Button_Click">
+            <iconPacks:PackIconMaterial Kind="Close"/>
+        </Button>
+
     </Grid>
 </Window>

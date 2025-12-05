@@ -22,5 +22,10 @@ namespace diplom_loskutova
             diplom_loskutova.Page.Authorization page = new diplom_loskutova.Page.Authorization();
             mainFrame.Navigate(new diplom_loskutova.Page.Authorization());
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }
