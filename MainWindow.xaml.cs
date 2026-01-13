@@ -16,6 +16,17 @@ namespace diplom_loskutova
             role = _role;
             RoleManager roleManager = new RoleManager();
             nameRole.Text = "(" + roleManager.GetNameById(Convert.ToInt32(_role)) + ")";
+
+            if (_role == "3")
+            {
+                BtnOpenPageApplication.Visibility = Visibility.Collapsed;
+                BtnOpenPageCitizen.Visibility = Visibility.Collapsed;
+                BtnOpenPageUsers.Visibility = Visibility.Collapsed;
+                BtnOpenPageStatus.Visibility = Visibility.Collapsed;
+                BtnOpenPageTypeEvent.Visibility = Visibility.Collapsed;
+                BtnOpenPageRoleUser.Visibility = Visibility.Collapsed;
+                BtnOpenPageReports.Visibility = Visibility.Collapsed;
+            }
         }
 
 

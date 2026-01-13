@@ -1,5 +1,8 @@
-﻿using System;
+﻿using ScottPlot;
+using System;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -13,11 +16,102 @@ namespace diplom_loskutova.Page
         public Citizens(string _role)
         {
             InitializeComponent();
+            LoadUserStats();
             LoadData();
 
             var visibilityManager = new Class.RoleVisibilityManager(_role);
             visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
         }
+
+        private void LoadUserStats()
+        {
+            try
+            {
+                // Загружаем ПОЛЬЗОВАТЕЛЬ
+                adapter.Fill(db.ГРАЖДАНИН);
+
+                // 1. Всего пользователей
+                tbTotalCitizen.Text = db.ПОЛЬЗОВАТЕЛЬ.Count.ToString();
+
+                listViewCitizen.ItemsSource = db.ПОЛЬЗОВАТЕЛЬ.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
+            }
+
+
+
+
+            // Создаем DataTable с агрегированными данными
+            DataTable dtCitizen = new DataTable();
+
+            // Запрос со всеми ролями в одном запросе
+            string sqlRoles = @"
+    SELECT 
+        ISNULL([40-50], 0) as [40-50],
+        ISNULL([51-60], 0) as [51-60], 
+        ISNULL([61-70], 0) as [61-70],
+        ISNULL([71-80], 0) as [71-80],
+        ISNULL([81-90], 0) as [81-90],
+        ISNULL([91-100], 0) as [91-100],
+        ISNULL([Другие], 0) as [Другие]
+    FROM (
+        SELECT 
+            CASE 
+                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 40 AND 50 THEN '40-50'
+                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 51 AND 60 THEN '51-60'
+                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 61 AND 70 THEN '61-70'
+                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 71 AND 80 THEN '71-80'
+                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 81 AND 90 THEN '81-90'
+                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 91 AND 100 THEN '91-100'
+                ELSE 'Другие'
+            END as Возрастная_группа,
+            1 as cnt
+        FROM [dbo].[ГРАЖДАНИН]
+    ) AS SourceTable
+    PIVOT (
+        COUNT(cnt) 
+        FOR Возрастная_группа IN ([40-50], [51-60], [61-70], [71-80], [81-90], [91-100], [Другие])
+    ) AS PivotTable";
+
+            SqlDataAdapter adapter2 = new SqlDataAdapter(sqlRoles, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString);
+            adapter2.Fill(dtCitizen);
+
+            // Безопасное чтение значений
+            int age1 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["40-50"]) : 0;
+            int age2 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["51-60"]) : 0;
+            int age3 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["61-70"]) : 0;
+            int age4 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["71-80"]) : 0;
+            int age5 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["81-90"]) : 0;
+            int age6 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["91-100"]) : 0;
+            int age7 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["Другие"]) : 0;
+
+            double[] values = { age1, age2, age3, age4, age5, age6, age7 };
+            var barPlot = WpfPlot1.Plot.Add.Bars(values);
+
+            // bars may be styled after they have been added
+            barPlot.Bars[0].FillColor = Colors.Orange;
+            barPlot.Bars[1].FillColor = Colors.Green;
+            barPlot.Bars[2].FillColor = Colors.Navy;
+
+            barPlot.Bars[0].FillHatch = new ScottPlot.Hatches.Striped();
+            barPlot.Bars[1].FillHatch = new ScottPlot.Hatches.Dots();
+            barPlot.Bars[2].FillHatch = new ScottPlot.Hatches.Checker();
+
+            foreach (var bar in barPlot.Bars)
+            {
+                bar.LineWidth = 2;
+                bar.LineColor = bar.FillColor.Darken(0.5);
+                bar.FillHatchColor = bar.FillColor.Lighten(0.1);
+            }
+
+            // tell the plot to autoscale with no padding beneath the bars
+            WpfPlot1.Plot.Axes.Margins(bottom: 0);
+
+            WpfPlot1.Refresh();
+        }
+
 
         // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()

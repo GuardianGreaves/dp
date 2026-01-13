@@ -34,14 +34,14 @@
             
             <!-- Меню -->
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
-                <Button Style="{StaticResource ButtomMenu}" Content="Заявки" Click="ButtonOpenPageApplication"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Мероприятия" Click="ButtonOpenPageEvent"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Граждане" Click="ButtonOpenPageCitizen"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Пользователи" Click="ButtonOpenPageUsers"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Статус" Click="ButtonOpenPageStatus"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Тип мероприятия" Click="ButtonOpenPageTypeEvent"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Роль пользователя" Click="ButtonOpenPageRoleUser"/>
-                <Button Style="{StaticResource ButtomMenu}" Content="Отчеты" Click="ButtonOpenPageReports"/> 
+                <Button Style="{StaticResource ButtomMenu}" Content="Заявки" Click="ButtonOpenPageApplication" Name="BtnOpenPageApplication"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Мероприятия" Click="ButtonOpenPageEvent" Name="BtnOpenPageEvent"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Граждане" Click="ButtonOpenPageCitizen" Name="BtnOpenPageCitizen"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Пользователи" Click="ButtonOpenPageUsers" Name="BtnOpenPageUsers"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Статус" Click="ButtonOpenPageStatus" Name="BtnOpenPageStatus"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Тип мероприятия" Click="ButtonOpenPageTypeEvent" Name="BtnOpenPageTypeEvent"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Роль пользователя" Click="ButtonOpenPageRoleUser" Name="BtnOpenPageRoleUser"/>
+                <Button Style="{StaticResource ButtomMenu}" Content="Отчеты" Click="ButtonOpenPageReports" Name="BtnOpenPageReports"/> 
             </StackPanel>
 
             <!-- Контроль окна -->

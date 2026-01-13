@@ -16,7 +16,16 @@ namespace diplom_loskutova.Page
             LoadData();
 
             var visibilityManager = new Class.RoleVisibilityManager(_role);
-            visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
+            if (_role == "1")
+            {
+                btnDelete.Visibility = Visibility.Collapsed;
+                btnAdd.Visibility = Visibility.Collapsed;
+                btnChange.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
+            }
 
         }
 
