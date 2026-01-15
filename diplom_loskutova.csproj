@@ -223,6 +223,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Class\CitizenManager.cs" />
+    <Compile Include="Class\Class1.cs" />
     <Compile Include="Class\ComboBoxHelper.cs" />
     <Compile Include="Class\DbHelper.cs" />
     <Compile Include="Class\EventsManager.cs" />
@@ -231,6 +232,9 @@
     <Compile Include="Class\TypeEventsManager.cs" />
     <Compile Include="Class\RoleManager.cs" />
     <Compile Include="Class\UserManager.cs" />
+    <Compile Include="DP_2025_LoskutovaDataSet.cs">
+      <DependentUpon>DP_2025_LoskutovaDataSet.xsd</DependentUpon>
+    </Compile>
     <Compile Include="DP_2025_LoskutovaDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

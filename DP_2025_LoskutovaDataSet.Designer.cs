@@ -10,8 +10,6 @@
 
 #pragma warning disable 1591
 
-using System;
-
 namespace diplom_loskutova {
     
     
@@ -6550,11 +6548,6 @@ FROM            МЕРОПРИЯТИЕ AS М INNER JOIN
         public virtual int Update(int ID_Пользователя, int ID_Типа, string Название, string Описание, System.DateTime Дата_Мероприятия, global::System.Nullable<decimal> Бюджет, int Original_ID_Мероприятия, int Original_ID_Пользователя, int Original_ID_Типа, string Original_Название, System.DateTime Original_Дата_Мероприятия, global::System.Nullable<decimal> Original_Бюджет) {
             return this.Update(ID_Пользователя, ID_Типа, Название, Описание, Дата_Мероприятия, Бюджет, Original_ID_Мероприятия, Original_ID_Пользователя, Original_ID_Типа, Original_Название, Original_Дата_Мероприятия, Original_Бюджет, Original_ID_Мероприятия);
         }
-
-        internal void Fill(DP_2025_LoskutovaDataSet.ТИП_МЕРОПРИЯТИЯDataTable тИП_МЕРОПРИЯТИЯ)
-        {
-            throw new NotImplementedException();
-        }
     }
     
     /// <summary>
@@ -6817,7 +6810,7 @@ INNER JOIN
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         [global::System.ComponentModel.Design.HelpKeywordAttribute("vs.data.TableAdapter")]
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Select, false)]
-        public virtual DP_2025_LoskutovaDataSet.ПОЛЬЗОВАТЕЛЬDataTable GetDataBy() {
+        public virtual DP_2025_LoskutovaDataSet.ПОЛЬЗОВАТЕЛЬDataTable GetDataBy3() {
             this.Adapter.SelectCommand = this.CommandCollection[4];
             DP_2025_LoskutovaDataSet.ПОЛЬЗОВАТЕЛЬDataTable dataTable = new DP_2025_LoskutovaDataSet.ПОЛЬЗОВАТЕЛЬDataTable();
             this.Adapter.Fill(dataTable);
