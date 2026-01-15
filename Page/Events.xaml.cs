@@ -1,6 +1,9 @@
 ﻿using diplom_loskutova.Helpers;
+using ScottPlot;
 using System;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Security;
 using System.Windows;
@@ -22,11 +25,87 @@ namespace diplom_loskutova.Page
             InitializeComponent();
             LoadData();
             LoadToComboBox();
+            LoadUserStats();
 
             var visibilityManager = new Class.RoleVisibilityManager(_role);
             visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
 
         }
+
+        private void LoadUserStats()
+        {
+            try
+            {
+                // Загружаем МЕРОПРИЯТИЕ
+                adapter.Fill(db.МЕРОПРИЯТИЕ);
+                tbTotalEvent.Text = db.МЕРОПРИЯТИЕ.Count.ToString();
+                listViewEvents.ItemsSource = db.МЕРОПРИЯТИЕ.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
+                return;
+            }
+
+            // Строим гистограмму типов мероприятий
+            BuildEventTypeHistogram();
+        }
+
+        private void BuildEventTypeHistogram()
+        {
+            var eventData = GetEventTypeStatistics();
+
+            if (eventData.Rows.Count == 0)
+                return;
+
+            // Очищаем график
+            WpfPlot1.Plot.Clear();
+
+            // Динамически извлекаем данные
+            var values = eventData.AsEnumerable()
+                .Select(row => Convert.ToDouble(row["Count"]))
+                .ToArray();
+
+            var labels = eventData.AsEnumerable()
+                .Select(row => row["TypeName"].ToString())
+                .ToArray();
+
+            double[] positions = Enumerable.Range(1, values.Length).Select(x => (double)x).ToArray();
+
+            // Добавляем столбцы динамически
+            for (int i = 0; i < values.Length; i++)
+            {
+                double[] xs = { positions[i] };
+                double[] ys = { values[i] };
+
+                var bar = WpfPlot1.Plot.Add.Bars(xs, ys);
+                bar.LegendText = labels[i];
+            }
+
+            WpfPlot1.Plot.Title("Распределение мероприятий по типам");
+            WpfPlot1.Plot.ShowLegend(Alignment.UpperLeft);
+            WpfPlot1.Plot.Axes.Margins(bottom: 0);
+            WpfPlot1.Refresh();
+        }
+        private DataTable GetEventTypeStatistics()
+        {
+            string sql = @"
+        SELECT 
+            t.Название as TypeName,
+            ISNULL(COUNT(m.ID_Мероприятия), 0) as Count
+        FROM [dbo].[ТИП_МЕРОПРИЯТИЯ] t
+        LEFT JOIN [dbo].[МЕРОПРИЯТИЕ] m ON t.ID_Типа = m.ID_Типа
+        GROUP BY t.ID_Типа, t.Название
+        ORDER BY t.ID_Типа";
+
+            DataTable dt = new DataTable();
+            using (var adapter = new SqlDataAdapter(sql, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString))
+            {
+                adapter.Fill(dt);
+            }
+            return dt;
+        }
+
 
         // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()

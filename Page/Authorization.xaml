@@ -39,13 +39,14 @@
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="93*"/>
-                        <ColumnDefinition Width="59*"/>
+                        <ColumnDefinition Width="44*"/>
+                        <ColumnDefinition Width="15*"/>
                     </Grid.ColumnDefinitions>
                     <Border Grid.Column="0" Width="34" Height="34" Background="Transparent" CornerRadius="17" VerticalAlignment="Center">
                         <iconPacks:PackIconMaterial Kind="LockOutline" Width="22" Height="22" Foreground="Gray" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
                     <PasswordBox FontSize="18" VerticalAlignment="Center" x:Name="TextBoxPassword" Background="Transparent" Grid.Column="1" BorderThickness="0" Width="300" Panel.ZIndex="2"
-                                 HorizontalAlignment="Left" Grid.ColumnSpan="2" PasswordChanged="TextBoxPassword_PasswordChanged"/>
+                                 HorizontalAlignment="Left" Grid.ColumnSpan="3" PasswordChanged="TextBoxPassword_PasswordChanged" />
                     <TextBlock x:Name="TextBlockPassword" Grid.Column="1" Text="Пароль" FontSize="18" Foreground="#808080" Panel.ZIndex="1"
                                Padding="2 4 0 0" Width="70" HorizontalAlignment="Left"/>
                 </Grid>

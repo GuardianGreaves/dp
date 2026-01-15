@@ -19,6 +19,11 @@ public class DbHelper
         this.connectionString = connectionString;
     }
 
+    public string getConnectString()
+    {
+        return ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString;
+    }
+
     public (int count, string name, string role) CheckUser(string login, string password)
     {
         int count = 0;

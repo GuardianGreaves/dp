@@ -32,9 +32,22 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Background="AliceBlue" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <TextBlock Text="Тут будут блоки с кол-во чего то"/>
-        </StackPanel>
+        <Grid Grid.Row="1" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Всего пользователей -->
+            <Border Grid.Column="0" Style="{StaticResource RoundedBorderStyle}" Background="LightBlue">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Всего: " FontSize="14" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="tbTotalUsers" FontSize="16" FontWeight="Bold" Margin="0,0,10,0"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -42,19 +55,54 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ListView x:Name="listViewStatus" MouseDoubleClick="ListViewStatus_MouseDoubleClick" Grid.Column="0" ItemsSource="{Binding}">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="ID" DisplayMemberBinding="{Binding [ID_Статуса]}"/>
-                        <GridViewColumn Header="Название" DisplayMemberBinding="{Binding [Название]}"/>
-                        <GridViewColumn Header="Описание" DisplayMemberBinding="{Binding [Описание]}"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <ListView x:Name="listViewStatus" MouseDoubleClick="ListViewStatus_MouseDoubleClick" Grid.Column="0" ItemsSource="{Binding}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="ID" DisplayMemberBinding="{Binding [ID_Статуса]}"/>
+                            <GridViewColumn Header="Название" DisplayMemberBinding="{Binding [Название]}"/>
+                            <GridViewColumn Header="Описание" DisplayMemberBinding="{Binding [Описание]}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+
+                <Grid Grid.Row="2">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Column="0" 
+               Text="{Binding CurrentPageDisplay}" 
+               HorizontalAlignment="Left"
+               VerticalAlignment="Center"/>
+
+                    <TextBlock Grid.Column="1" 
+               Text="{Binding PageInfo}" 
+               HorizontalAlignment="Center"
+               VerticalAlignment="Center"/>
+
+                    <Button Width="30" Height="30" Grid.Column="2" 
+            Content="&lt;" 
+            Command="{Binding PreviousCommand}"
+            IsEnabled="{Binding CanGoPrevious}"/>
+                    <Button Width="30" Height="30" Grid.Column="3" 
+            Content="&gt;" 
+            Command="{Binding NextCommand}"
+            IsEnabled="{Binding CanGoNext}"/>
+                </Grid>
+            </Grid>
+            
+            
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -73,9 +121,6 @@
 
                         <Button Margin="0 10 0 0" Grid.Row="4" Content="Сбросить фильтр" Click="BtnResetFilter_Click" />
                     </Grid>
-                </StackPanel>
-                <StackPanel Grid.Row="1" Background="OldLace">
-                    <TextBlock Text="Тут будут вские диаграммы"/>
                 </StackPanel>
             </Grid>
         </Grid>

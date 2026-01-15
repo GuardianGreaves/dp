@@ -41,6 +41,25 @@ namespace diplom_loskutova.Page
             {
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
             }
+            LoadStats();
+        }
+
+        private void LoadStats()
+        {
+            try
+            {
+                // Загружаем ПОЛЬЗОВАТЕЛЬ
+                adapter.Fill(db.РОЛЬ);
+
+                // 1. Всего пользователей
+                tbTotalUsers.Text = db.РОЛЬ.Count.ToString();
+
+                listViewRoleUser.ItemsSource = db.РОЛЬ.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
+            }
         }
 
         // Открывает страницу создания новой записи.

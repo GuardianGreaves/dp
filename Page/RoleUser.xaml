@@ -30,9 +30,22 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Background="Honeydew" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <TextBlock Text="Тут будут блоки с кол-во чего то"/>
-        </StackPanel>
+        <Grid Grid.Row="1" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Всего пользователей -->
+            <Border Grid.Column="0" Style="{StaticResource RoundedBorderStyle}" Background="LightBlue">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Всего: " FontSize="14" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="tbTotalUsers" FontSize="16" FontWeight="Bold" Margin="0,0,10,0"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -53,7 +66,6 @@
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
@@ -72,9 +84,6 @@
 
                         <Button Margin="0 10 0 0" Grid.Row="4" Content="Сбросить фильтр" Click="BtnResetFilter_Click" />
                     </Grid>
-                </StackPanel>
-                <StackPanel Grid.Row="1" Background="NavajoWhite">
-                    <TextBlock Text="Тут будут вские диаграммы"/>
                 </StackPanel>
             </Grid>
         </Grid>

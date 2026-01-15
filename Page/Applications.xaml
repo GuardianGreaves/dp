@@ -2,7 +2,7 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:ScottPlot="http://schemas.scottplot.net/2008/xaml/presentation"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="Application">
@@ -31,9 +31,22 @@
             </Button>
         </StackPanel>
 
-        <StackPanel Grid.Row="1" Background="Wheat" Orientation="Horizontal" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
-            <TextBlock Text="Тут будут блоки с кол-во чего то"/>
-        </StackPanel>
+        <Grid Grid.Row="1" Background="Transparent">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Всего пользователей -->
+            <Border Grid.Column="0" Style="{StaticResource RoundedBorderStyle}" Background="LightBlue">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock Text="Всего: " FontSize="14" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="tbTotalUsers" FontSize="16" FontWeight="Bold" Margin="0,0,10,0"/>
+                </StackPanel>
+            </Border>
+
+        </Grid>
 
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
@@ -55,6 +68,7 @@
 
             <Grid Grid.Column="1">
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
@@ -88,9 +102,8 @@
                         <Button Margin="0 10 0 0" Grid.Row="10" Content="Сбросить фильтр" Click="BtnResetFilter_Click" />
                     </Grid>
                 </StackPanel>
-                <StackPanel Grid.Row="1" Background="Honeydew">
-                    <TextBlock Text="Тут будут вские диаграммы"/>
-                </StackPanel>
+                <TextBlock  Grid.Row="1" Text="Количество заявок на каждый статус " TextAlignment="Center" FontSize="14"/>
+                <ScottPlot:WpfPlot x:Name="WpfPlot1" Grid.Row="2"/>
             </Grid>
         </Grid>
     </Grid>

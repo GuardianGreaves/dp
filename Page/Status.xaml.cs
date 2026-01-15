@@ -1,5 +1,8 @@
-﻿using System;
+﻿using GalaSoft.MvvmLight.CommandWpf;
+using System;
+using System.ComponentModel;
 using System.Data;
+using System.Runtime.CompilerServices;
 using System.Web.Security;
 using System.Windows;
 using System.Windows.Input;
@@ -10,7 +13,7 @@ namespace diplom_loskutova.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.СТАТУСTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
-
+        private PaginationViewModel paginationVM;
         public Status(string _role)
         {
             InitializeComponent();
@@ -29,6 +32,25 @@ namespace diplom_loskutova.Page
             }
         }
 
+        private void LoadStats()
+        {
+            try
+            {
+                // Загружаем ПОЛЬЗОВАТЕЛЬ
+                adapter.Fill(db.СТАТУС);
+
+                // 1. Всего пользователей
+                tbTotalUsers.Text = db.СТАТУС.Count.ToString();
+
+                listViewStatus.ItemsSource = db.СТАТУС.DefaultView;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
+            }
+        }
+
+
         // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
         {
@@ -41,6 +63,7 @@ namespace diplom_loskutova.Page
             {
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
             }
+            LoadStats();
         }
 
         // Открывает страницу создания новой записи.
@@ -181,5 +204,57 @@ namespace diplom_loskutova.Page
             ApplyFilter();                          // Применить фильтр
         }
 
+    }
+}
+
+
+
+public class PaginationViewModel : INotifyPropertyChanged
+{
+    private int _currentPage = 1;
+    private int _totalRecords = 0;
+    private const int PAGE_SIZE = 15;
+
+    public int CurrentPage
+    {
+        get => _currentPage;
+        set { _currentPage = value; OnPropertyChanged(); UpdatePageInfo(); }
+    }
+
+    public int TotalRecords => _totalRecords;
+    public int TotalPages => (int)Math.Ceiling((double)_totalRecords / PAGE_SIZE);
+    public bool CanGoPrevious => CurrentPage > 1;
+    public bool CanGoNext => CurrentPage < TotalPages;
+
+    public string CurrentPageDisplay => $"Страница {CurrentPage}";
+    public string PageInfo => $"Записей {GetStartRecord()}–{GetEndRecord()} из {TotalRecords}";
+
+    public ICommand PreviousCommand { get; }
+    public ICommand NextCommand { get; }
+
+    public PaginationViewModel()
+    {
+        PreviousCommand = new RelayCommand(Previous, () => CanGoPrevious);
+        NextCommand = new RelayCommand(Next, () => CanGoNext);
+    }
+
+    private void Previous() => CurrentPage--;
+    private void Next() => CurrentPage++;
+
+    private int GetStartRecord() => (CurrentPage - 1) * PAGE_SIZE + 1;
+    private int GetEndRecord() => Math.Min(CurrentPage * PAGE_SIZE, TotalRecords);
+
+    public void UpdatePageInfo()
+    {
+        OnPropertyChanged(nameof(CurrentPageDisplay));
+        OnPropertyChanged(nameof(PageInfo));
+        OnPropertyChanged(nameof(CanGoPrevious));
+        OnPropertyChanged(nameof(CanGoNext));
+    }
+
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
+    {
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

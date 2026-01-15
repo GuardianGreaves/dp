@@ -3,6 +3,7 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,89 +28,95 @@ namespace diplom_loskutova.Page
         {
             try
             {
-                // Загружаем ПОЛЬЗОВАТЕЛЬ
+                // Загружаем ГРАЖДАНИН
                 adapter.Fill(db.ГРАЖДАНИН);
-
-                // 1. Всего пользователей
-                tbTotalCitizen.Text = db.ПОЛЬЗОВАТЕЛЬ.Count.ToString();
-
-                listViewCitizen.ItemsSource = db.ПОЛЬЗОВАТЕЛЬ.DefaultView;
+                tbTotalCitizen.Text = db.ГРАЖДАНИН.Count.ToString();
+                listViewCitizen.ItemsSource = db.ГРАЖДАНИН.DefaultView;
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
+                return;
             }
 
+            // Строим гистограмму возрастов
+            BuildAgeHistogram();
+        }
 
+        private void BuildAgeHistogram()
+        {
+            var ageData = GetAgeGroupStatistics();
 
+            if (ageData.Rows.Count == 0)
+                return;
 
-            // Создаем DataTable с агрегированными данными
-            DataTable dtCitizen = new DataTable();
+            // Динамически извлекаем данные
+            double[] values = ageData.AsEnumerable()
+                .Select(row => Convert.ToDouble(row["Count"]))
+                .ToArray();
 
-            // Запрос со всеми ролями в одном запросе
-            string sqlRoles = @"
-    SELECT 
-        ISNULL([40-50], 0) as [40-50],
-        ISNULL([51-60], 0) as [51-60], 
-        ISNULL([61-70], 0) as [61-70],
-        ISNULL([71-80], 0) as [71-80],
-        ISNULL([81-90], 0) as [81-90],
-        ISNULL([91-100], 0) as [91-100],
-        ISNULL([Другие], 0) as [Другие]
-    FROM (
-        SELECT 
-            CASE 
-                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 40 AND 50 THEN '40-50'
-                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 51 AND 60 THEN '51-60'
-                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 61 AND 70 THEN '61-70'
-                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 71 AND 80 THEN '71-80'
-                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 81 AND 90 THEN '81-90'
-                WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 91 AND 100 THEN '91-100'
-                ELSE 'Другие'
-            END as Возрастная_группа,
-            1 as cnt
-        FROM [dbo].[ГРАЖДАНИН]
-    ) AS SourceTable
-    PIVOT (
-        COUNT(cnt) 
-        FOR Возрастная_группа IN ([40-50], [51-60], [61-70], [71-80], [81-90], [91-100], [Другие])
-    ) AS PivotTable";
+            string[] labels = ageData.AsEnumerable()
+                .Select(row => row["Возрастная_группа"].ToString())
+                .ToArray();
 
-            SqlDataAdapter adapter2 = new SqlDataAdapter(sqlRoles, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString);
-            adapter2.Fill(dtCitizen);
+            double[] positions = Enumerable.Range(1, values.Length).Select(x => (double)x).ToArray();
 
-            // Безопасное чтение значений
-            int age1 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["40-50"]) : 0;
-            int age2 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["51-60"]) : 0;
-            int age3 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["61-70"]) : 0;
-            int age4 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["71-80"]) : 0;
-            int age5 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["81-90"]) : 0;
-            int age6 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["91-100"]) : 0;
-            int age7 = dtCitizen.Rows.Count > 0 ? Convert.ToInt32(dtCitizen.Rows[0]["Другие"]) : 0;
+            // Очищаем график перед построением нового
+            WpfPlot1.Plot.Clear();
 
-            double[] values = { age1, age2, age3, age4, age5, age6, age7 };
-            var barPlot = WpfPlot1.Plot.Add.Bars(values);
-
-            // bars may be styled after they have been added
-            barPlot.Bars[0].FillColor = Colors.Orange;
-            barPlot.Bars[1].FillColor = Colors.Green;
-            barPlot.Bars[2].FillColor = Colors.Navy;
-
-            barPlot.Bars[0].FillHatch = new ScottPlot.Hatches.Striped();
-            barPlot.Bars[1].FillHatch = new ScottPlot.Hatches.Dots();
-            barPlot.Bars[2].FillHatch = new ScottPlot.Hatches.Checker();
-
-            foreach (var bar in barPlot.Bars)
+            // Добавляем все столбцы динамически
+            for (int i = 0; i < values.Length; i++)
             {
-                bar.LineWidth = 2;
-                bar.LineColor = bar.FillColor.Darken(0.5);
-                bar.FillHatchColor = bar.FillColor.Lighten(0.1);
+                double[] xs = { positions[i] };
+                double[] ys = { values[i] };
+
+                var bar = WpfPlot1.Plot.Add.Bars(xs, ys);
+                bar.LegendText = labels[i];
             }
 
-            // tell the plot to autoscale with no padding beneath the bars
+            WpfPlot1.Plot.ShowLegend(Alignment.UpperLeft);
             WpfPlot1.Plot.Axes.Margins(bottom: 0);
-
+            WpfPlot1.Plot.Title("Распределение граждан по возрастным группам");
             WpfPlot1.Refresh();
+        }
+        private DataTable GetAgeGroupStatistics()
+        {
+            string sql = @"
+        SELECT 
+            Возрастная_группа,
+            COUNT(*) as Count
+        FROM (
+            SELECT 
+                CASE 
+                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 40 AND 50 THEN '40-50'
+                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 51 AND 60 THEN '51-60'
+                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 61 AND 70 THEN '61-70'
+                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 71 AND 80 THEN '71-80'
+                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 81 AND 90 THEN '81-90'
+                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) >= 91 THEN '91+'
+                    ELSE 'До 40'
+                END as Возрастная_группа
+            FROM [dbo].[ГРАЖДАНИН]
+            WHERE Дата_Рождения IS NOT NULL
+        ) AS AgeGroups
+        GROUP BY Возрастная_группа
+        ORDER BY 
+            CASE Возрастная_группа
+                WHEN 'До 40' THEN 0
+                WHEN '40-50' THEN 1
+                WHEN '51-60' THEN 2
+                WHEN '61-70' THEN 3
+                WHEN '71-80' THEN 4
+                WHEN '81-90' THEN 5
+                WHEN '90+' THEN 6
+            END";
+
+            DataTable dt = new DataTable();
+            using (var adapter = new SqlDataAdapter(sql, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString))
+            {
+                adapter.Fill(dt);
+            }
+            return dt;
         }
 
 
@@ -125,6 +132,7 @@ namespace diplom_loskutova.Page
             {
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
             }
+            LoadUserStats();
         }
 
         // Открывает страницу создания новой записи.

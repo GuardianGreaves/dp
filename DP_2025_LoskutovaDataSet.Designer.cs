@@ -10,6 +10,8 @@
 
 #pragma warning disable 1591
 
+using System;
+
 namespace diplom_loskutova {
     
     
@@ -6547,6 +6549,11 @@ FROM            МЕРОПРИЯТИЕ AS М INNER JOIN
         [global::System.ComponentModel.DataObjectMethodAttribute(global::System.ComponentModel.DataObjectMethodType.Update, true)]
         public virtual int Update(int ID_Пользователя, int ID_Типа, string Название, string Описание, System.DateTime Дата_Мероприятия, global::System.Nullable<decimal> Бюджет, int Original_ID_Мероприятия, int Original_ID_Пользователя, int Original_ID_Типа, string Original_Название, System.DateTime Original_Дата_Мероприятия, global::System.Nullable<decimal> Original_Бюджет) {
             return this.Update(ID_Пользователя, ID_Типа, Название, Описание, Дата_Мероприятия, Бюджет, Original_ID_Мероприятия, Original_ID_Пользователя, Original_ID_Типа, Original_Название, Original_Дата_Мероприятия, Original_Бюджет, Original_ID_Мероприятия);
+        }
+
+        internal void Fill(DP_2025_LoskutovaDataSet.ТИП_МЕРОПРИЯТИЯDataTable тИП_МЕРОПРИЯТИЯ)
+        {
+            throw new NotImplementedException();
         }
     }
     

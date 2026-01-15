@@ -20,10 +20,10 @@ namespace diplom_loskutova.Page
         public Users(string _role)
         {
             InitializeComponent();
+
+            // Загружаем роли ПЕРЕД подпиской на Loaded
             LoadData();
             LoadRolesToComboBox();
-            LoadUserStats();
-
 
             var visibilityManager = new Class.RoleVisibilityManager(_role);
             if (_role == "1")
@@ -36,64 +36,34 @@ namespace diplom_loskutova.Page
             {
                 visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
             }
+        }
 
-            // Создаем DataTable с агрегированными данными
-            DataTable dtRoles = new DataTable();
+        private DataTable GetRoleStatistics()
+        {
+            string sql = @"
+        SELECT 
+            r.ID_Роли,
+            r.Название,
+            ISNULL(COUNT(u.ID_Пользователя), 0) as RoleCount
+        FROM [dbo].[РОЛЬ] r 
+        LEFT JOIN [dbo].[ПОЛЬЗОВАТЕЛЬ] u ON r.ID_Роли = u.ID_Роли 
+        GROUP BY r.ID_Роли, r.Название
+        ORDER BY r.ID_Роли";
 
-            // Запрос со всеми ролями в одном запросе
-            string sqlRoles = @"
-                SELECT 
-                    (SELECT COUNT(*) FROM [dbo].[ПОЛЬЗОВАТЕЛЬ] WHERE ID_Роли = 1) as SocCount,
-                    (SELECT COUNT(*) FROM [dbo].[ПОЛЬЗОВАТЕЛЬ] WHERE ID_Роли = 2) as AdminCount,
-                    (SELECT COUNT(*) FROM [dbo].[ПОЛЬЗОВАТЕЛЬ] WHERE ID_Роли = 3) as GuestCount";
-
-            SqlDataAdapter adapter = new SqlDataAdapter(sqlRoles, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString);
-            adapter.Fill(dtRoles);
-
-            // Использование
-            int role1 = (int)dtRoles.Rows[0]["SocCount"];
-            int role2 = (int)dtRoles.Rows[0]["AdminCount"];
-            int role3 = (int)dtRoles.Rows[0]["GuestCount"];
-
-            Loaded += (s, e) =>
+            DataTable dt = new DataTable();
+            using (var adapter = new SqlDataAdapter(sql, connectionString))
             {
-                double[] values = new double[] { role1, role2, role3 };
-                string[] labels = { "Соцработник", "Администратор", "Гость" };
-
-                var pie = WpfPlot1.Plot.Add.Pie(values);
-                pie.ExplodeFraction = .1;
-                pie.SliceLabelDistance = 0.5;
-
-                double total = pie.Slices.Select(x => x.Value).Sum();
-                double[] percentages = pie.Slices.Select(x => x.Value / total * 100).ToArray();
-
-                for (int i = 0; i < pie.Slices.Count; i++)
-                {
-                    pie.Slices[i].Label = $"{percentages[i]:0.0}%\n{labels[i]}";
-                    pie.Slices[i].LabelFontSize = 16;
-                    pie.Slices[i].LabelBold = true;
-                    pie.Slices[i].LabelFontColor = Colors.Black.WithAlpha(.7);
-                }
-
-                pie.Radius = 1.25;
-                WpfPlot1.Plot.Axes.SetLimits(-1.5, 1.5, -1.5, 1.5);
-
-                // Заголовок
-                WpfPlot1.Plot.Title("Распределение пользователей по ролям");
-
-                // Легенда
-                WpfPlot1.Plot.ShowLegend();
-
-                WpfPlot1.Plot.Axes.Frameless();
-                WpfPlot1.Plot.HideGrid();
-                WpfPlot1.Refresh();
-            };
+                adapter.Fill(dt);
+            }
+            return dt;
         }
 
 
-
         private void LoadUserStats()
-        {
+        {            
+            // Вызываем метод для загрузки статистики ролей
+            var roleStats = GetRoleStatistics(); // Сохраняем в локальную переменную
+
             try
             {
                 // Загружаем ПОЛЬЗОВАТЕЛЬ
@@ -108,13 +78,42 @@ namespace diplom_loskutova.Page
             {
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
             }
+            Loaded += (s, e) =>
+            {
+                // Используем загруженные данные
+                double[] values = roleStats.AsEnumerable()
+                    .Select(row => Convert.ToDouble(row["RoleCount"]))
+                    .ToArray();
 
-           
+                string[] labels = roleStats.AsEnumerable()
+                    .Select(row => row["Название"].ToString())
+                    .ToArray();
+
+                // Создаем круговую диаграмму
+                var pie = WpfPlot1.Plot.Add.Pie(values);
+                pie.ExplodeFraction = .1;
+                pie.SliceLabelDistance = 0.5;
+
+                double total = values.Sum();
+                double[] percentages = values.Select(v => v / total * 100).ToArray();
+
+                for (int i = 0; i < pie.Slices.Count; i++)
+                {
+                    pie.Slices[i].Label = $"{percentages[i]:0.0}%\n{labels[i]}";
+                    pie.Slices[i].LabelFontSize = 16;
+                    pie.Slices[i].LabelBold = true;
+                    pie.Slices[i].LabelFontColor = Colors.Black.WithAlpha(.7);
+                }
+
+                pie.Radius = 1.25;
+                WpfPlot1.Plot.Axes.SetLimits(-1.5, 1.5, -1.5, 1.5);
+                WpfPlot1.Plot.Title("Распределение пользователей по ролям");
+                WpfPlot1.Plot.ShowLegend();
+                WpfPlot1.Plot.Axes.Frameless();
+                WpfPlot1.Plot.HideGrid();
+                WpfPlot1.Refresh();
+            };
         }
-
-
-
-
 
         // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
@@ -128,6 +127,7 @@ namespace diplom_loskutova.Page
             {
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
             }
+            LoadUserStats();
         }
 
         // Открывает страницу создания новой записи.
