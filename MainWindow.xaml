@@ -5,7 +5,7 @@
         WindowStartupLocation="CenterScreen" WindowStyle="None" Height="720" Width="1080"
         AllowsTransparency="True" Background="White">
 
-    <Border Background="Transparent" MouseDown="Border_MouseDown" BorderBrush="Gainsboro" BorderThickness="1">
+    <Border Background="Transparent" BorderBrush="Gainsboro" BorderThickness="1">
         <DockPanel LastChildFill="True">
             <!-- Верхняя панель -->
             <Grid DockPanel.Dock="Top">
