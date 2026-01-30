@@ -23,7 +23,7 @@
                     Content="Word"/>
             <Button Style="{StaticResource ButtomMenu}" Height="30" Click="Button_Click_1" 
                     Content="Excel"/>
-            <Button Style="{StaticResource ButtomMenu}" Height="30" Click="Button_Click_1" 
+            <Button Style="{StaticResource ButtomMenu}" Height="30" Click="PrintButton_Click" 
                     Content="Печать"/>
         </StackPanel>
 
