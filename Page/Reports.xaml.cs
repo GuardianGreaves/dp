@@ -5,15 +5,14 @@ namespace diplom_loskutova.Page
 {
     public partial class Reports : System.Windows.Controls.Page
     {
-        public event EventHandler OpenPageReport;
         public Reports()
         {
             InitializeComponent();
         }
         private void OpenPage(int numberReport)
         {
-            diplom_loskutova.Page.Report page;
-            page = new diplom_loskutova.Page.Report(numberReport);
+            diplom_loskutova.UserControlReport page;
+            page = new diplom_loskutova.UserControlReport(numberReport);
             NavigationService.Navigate(page);
         }
 

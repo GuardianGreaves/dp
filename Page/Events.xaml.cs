@@ -5,7 +5,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -18,7 +17,7 @@ namespace diplom_loskutova.Page
     public partial class Events : System.Windows.Controls.Page
     {
         private DP_2025_LoskutovaDataSetTableAdapters.МЕРОПРИЯТИЕTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.МЕРОПРИЯТИЕTableAdapter();
-        private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
+        private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();
 
         public Events(string _role)
         {
@@ -29,14 +28,12 @@ namespace diplom_loskutova.Page
 
             var visibilityManager = new Class.RoleVisibilityManager(_role);
             visibilityManager.SetButtonVisibility(btnDelete, btnAdd, btnChange);
-
         }
 
         private void LoadUserStats()
         {
             try
             {
-                // Загружаем МЕРОПРИЯТИЕ
                 adapter.Fill(db.МЕРОПРИЯТИЕ);
                 tbTotalEvent.Text = db.МЕРОПРИЯТИЕ.Count.ToString();
                 listViewEvents.ItemsSource = db.МЕРОПРИЯТИЕ.DefaultView;
@@ -46,8 +43,6 @@ namespace diplom_loskutova.Page
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
                 return;
             }
-
-            // Строим гистограмму типов мероприятий
             BuildEventTypeHistogram();
         }
 
@@ -57,22 +52,15 @@ namespace diplom_loskutova.Page
 
             if (eventData.Rows.Count == 0)
                 return;
-
-            // Очищаем график
             WpfPlot1.Plot.Clear();
-
-            // Динамически извлекаем данные
             var values = eventData.AsEnumerable()
                 .Select(row => Convert.ToDouble(row["Count"]))
                 .ToArray();
-
             var labels = eventData.AsEnumerable()
                 .Select(row => row["TypeName"].ToString())
                 .ToArray();
-
             double[] positions = Enumerable.Range(1, values.Length).Select(x => (double)x).ToArray();
 
-            // Добавляем столбцы динамически
             for (int i = 0; i < values.Length; i++)
             {
                 double[] xs = { positions[i] };
@@ -90,13 +78,13 @@ namespace diplom_loskutova.Page
         private DataTable GetEventTypeStatistics()
         {
             string sql = @"
-        SELECT 
-            t.Название as TypeName,
-            ISNULL(COUNT(m.ID_Мероприятия), 0) as Count
-        FROM [dbo].[ТИП_МЕРОПРИЯТИЯ] t
-        LEFT JOIN [dbo].[МЕРОПРИЯТИЕ] m ON t.ID_Типа = m.ID_Типа
-        GROUP BY t.ID_Типа, t.Название
-        ORDER BY t.ID_Типа";
+                        SELECT 
+                            t.Название as TypeName,
+                            ISNULL(COUNT(m.ID_Мероприятия), 0) as Count
+                        FROM [dbo].[ТИП_МЕРОПРИЯТИЯ] t
+                        LEFT JOIN [dbo].[МЕРОПРИЯТИЕ] m ON t.ID_Типа = m.ID_Типа
+                        GROUP BY t.ID_Типа, t.Название
+                        ORDER BY t.ID_Типа";
 
             DataTable dt = new DataTable();
             using (var adapter = new SqlDataAdapter(sql, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString))
@@ -106,8 +94,6 @@ namespace diplom_loskutova.Page
             return dt;
         }
 
-
-        // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
         {
             try
@@ -121,13 +107,11 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Открывает страницу создания новой записи.
         private void BtnAdd(object sender, RoutedEventArgs e)
         {
             OpenPage(false);
         }
 
-        // Проверяет выбран ли элемент, удаляет его из DataTable, обновляет базу и перезагружает данные.
         private void BtnDelete(object sender, RoutedEventArgs e)
         {
             if (TryGetSelectedRow(out DataRowView selectedRowView))
@@ -155,19 +139,16 @@ namespace diplom_loskutova.Page
 
         }
 
-        // Навигирует на страницу редактирования выбранного элемента.
         private void BtnChange(object sender, RoutedEventArgs e)
         {
             NavigatePageSelectedRow();
         }
 
-        // Переходит на страницу редактирования выбранной записи, если она выбрана.
         private void ListViewStatus_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             NavigatePageSelectedRow();
         }
 
-        // Универсальный метод для выбора строки из ListView как DataRowView.
         private bool TryGetSelectedRow(out DataRowView selectedRowView)
         {
             selectedRowView = listViewEvents.SelectedItem as DataRowView;
@@ -182,7 +163,6 @@ namespace diplom_loskutova.Page
                 MessageBox.Show("Выберите строку для редактирования.");
         }
 
-        // Открывает страницу добавления или изменения записи.
         private void OpenPage(bool isChangeOrAdd, DataRowView rowView = null)
         {
             diplom_loskutova.Page.AddOrChange.EventsAOC page;
@@ -206,7 +186,6 @@ namespace diplom_loskutova.Page
 
             string filter = "";
 
-            // Фильтр по ФИО
             var fio = ComboBoxSearchFIO.Text.Trim();
             if (!string.IsNullOrEmpty(fio))
             {
@@ -220,7 +199,6 @@ namespace diplom_loskutova.Page
                 filter += $"ID_Типа = {ComboBoxSearchTypeEvent.SelectedValue}";
             }
 
-            // Фильтр по логину
             var login = TextBoxSearchName.Text.Trim();
             if (!string.IsNullOrEmpty(login))
             {
@@ -229,7 +207,6 @@ namespace diplom_loskutova.Page
                 filter += $"Название LIKE '%{login}%'";
             }
 
-            // Фильтр по дате
             if (DatePickerSearchDate.SelectedDate.HasValue)
             {
                 if (filter.Length > 0)
@@ -238,7 +215,6 @@ namespace diplom_loskutova.Page
                 filter += $"Дата_Мероприятия = #{selectedDateStr}#";
             }
 
-            // Фильтр по бюджету
             if (decimal.TryParse(TextBoxMinBudget.Text.Trim(), out decimal minBudget))
             {
                 if (filter.Length > 0)

@@ -9,9 +9,11 @@ namespace diplom_loskutova
     public partial class MainWindow : Window
     {
         private string role;
+
         public MainWindow(string _name, string _role)
         {
             InitializeComponent();
+
             nameUser.Text = _name;
             role = _role;
             RoleManager roleManager = new RoleManager();
@@ -29,8 +31,6 @@ namespace diplom_loskutova
             }
         }
 
-
-
         // КНОПКИ ОКНА
         private Window GetWindow() => Window.GetWindow(this);
         private void Minimize_Click(object sender, RoutedEventArgs e)
@@ -38,6 +38,7 @@ namespace diplom_loskutova
             var window = GetWindow();
             if (window != null) window.WindowState = WindowState.Minimized;
         }
+
         private void Restore_Click(object sender, RoutedEventArgs e)
         {
             var window = GetWindow();
@@ -46,13 +47,12 @@ namespace diplom_loskutova
                 window.WindowState = window.WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
             }
         }
+
         private void Close_Click(object sender, RoutedEventArgs e)
         {
             var window = GetWindow();
             if (window != null) window.Close();
         }
-
-
 
         // ОТКРЫТИЕ СТРАНИЦЫ ЗАЯВКИ
         private void ButtonOpenPageApplication(object sender, RoutedEventArgs e)
@@ -61,15 +61,12 @@ namespace diplom_loskutova
             mainFrame.Navigate(page);
         }
 
-
-
         // ОТКРЫТИЕ СТРАНИЦЫ МЕРОПРИЯТИЯ
         private void ButtonOpenPageEvent(object sender, RoutedEventArgs e)
         {
             diplom_loskutova.Page.Events page = new diplom_loskutova.Page.Events(role);
             mainFrame.Navigate(page);
         }
-
 
         // ОТКРЫТИЕ СТРАНИЦЫ ГРАЖДАНЕ
         private void ButtonOpenPageCitizen(object sender, RoutedEventArgs e)
@@ -84,7 +81,6 @@ namespace diplom_loskutova
             diplom_loskutova.Page.Users page = new diplom_loskutova.Page.Users(role);
             mainFrame.Navigate(page);
         }
-
 
         // ОТКРЫТИЕ СТРАНИЦЫ СТАТУС
         private void ButtonOpenPageStatus(object sender, RoutedEventArgs e)
@@ -113,7 +109,6 @@ namespace diplom_loskutova
             diplom_loskutova.Page.Reports page = new diplom_loskutova.Page.Reports();
             mainFrame.Navigate(page);
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             WindowAuthorization newWindow = new WindowAuthorization();

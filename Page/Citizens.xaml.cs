@@ -12,6 +12,7 @@ namespace diplom_loskutova.Page
 {
     public partial class Citizens : System.Windows.Controls.Page
     {
+        private DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter relatedAdapter = new DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter();
         private DP_2025_LoskutovaDataSetTableAdapters.ГРАЖДАНИНTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ГРАЖДАНИНTableAdapter();
         private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
         public Citizens(string _role)
@@ -28,7 +29,6 @@ namespace diplom_loskutova.Page
         {
             try
             {
-                // Загружаем ГРАЖДАНИН
                 adapter.Fill(db.ГРАЖДАНИН);
                 tbTotalCitizen.Text = db.ГРАЖДАНИН.Count.ToString();
                 listViewCitizen.ItemsSource = db.ГРАЖДАНИН.DefaultView;
@@ -38,33 +38,23 @@ namespace diplom_loskutova.Page
                 MessageBox.Show($"Ошибка загрузки данных: {ex.Message}", "Ошибка");
                 return;
             }
-
-            // Строим гистограмму возрастов
             BuildAgeHistogram();
         }
 
         private void BuildAgeHistogram()
         {
             var ageData = GetAgeGroupStatistics();
-
             if (ageData.Rows.Count == 0)
                 return;
-
-            // Динамически извлекаем данные
             double[] values = ageData.AsEnumerable()
                 .Select(row => Convert.ToDouble(row["Count"]))
                 .ToArray();
-
             string[] labels = ageData.AsEnumerable()
                 .Select(row => row["Возрастная_группа"].ToString())
                 .ToArray();
-
             double[] positions = Enumerable.Range(1, values.Length).Select(x => (double)x).ToArray();
-
-            // Очищаем график перед построением нового
             WpfPlot1.Plot.Clear();
 
-            // Добавляем все столбцы динамически
             for (int i = 0; i < values.Length; i++)
             {
                 double[] xs = { positions[i] };
@@ -82,34 +72,34 @@ namespace diplom_loskutova.Page
         private DataTable GetAgeGroupStatistics()
         {
             string sql = @"
-        SELECT 
-            Возрастная_группа,
-            COUNT(*) as Count
-        FROM (
-            SELECT 
-                CASE 
-                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 40 AND 50 THEN '40-50'
-                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 51 AND 60 THEN '51-60'
-                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 61 AND 70 THEN '61-70'
-                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 71 AND 80 THEN '71-80'
-                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 81 AND 90 THEN '81-90'
-                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) >= 91 THEN '91+'
-                    ELSE 'До 40'
-                END as Возрастная_группа
-            FROM [dbo].[ГРАЖДАНИН]
-            WHERE Дата_Рождения IS NOT NULL
-        ) AS AgeGroups
-        GROUP BY Возрастная_группа
-        ORDER BY 
-            CASE Возрастная_группа
-                WHEN 'До 40' THEN 0
-                WHEN '40-50' THEN 1
-                WHEN '51-60' THEN 2
-                WHEN '61-70' THEN 3
-                WHEN '71-80' THEN 4
-                WHEN '81-90' THEN 5
-                WHEN '90+' THEN 6
-            END";
+                        SELECT 
+                            Возрастная_группа,
+                            COUNT(*) as Count
+                        FROM (
+                            SELECT 
+                                CASE 
+                                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 40 AND 50 THEN '40-50'
+                                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 51 AND 60 THEN '51-60'
+                                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 61 AND 70 THEN '61-70'
+                                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 71 AND 80 THEN '71-80'
+                                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) BETWEEN 81 AND 90 THEN '81-90'
+                                    WHEN DATEDIFF(YEAR, Дата_Рождения, GETDATE()) >= 91 THEN '91+'
+                                    ELSE 'До 40'
+                                END as Возрастная_группа
+                            FROM [dbo].[ГРАЖДАНИН]
+                            WHERE Дата_Рождения IS NOT NULL
+                        ) AS AgeGroups
+                        GROUP BY Возрастная_группа
+                        ORDER BY 
+                            CASE Возрастная_группа
+                                WHEN 'До 40' THEN 0
+                                WHEN '40-50' THEN 1
+                                WHEN '51-60' THEN 2
+                                WHEN '61-70' THEN 3
+                                WHEN '71-80' THEN 4
+                                WHEN '81-90' THEN 5
+                                WHEN '90+' THEN 6
+                            END";
 
             DataTable dt = new DataTable();
             using (var adapter = new SqlDataAdapter(sql, ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString))
@@ -119,8 +109,6 @@ namespace diplom_loskutova.Page
             return dt;
         }
 
-
-        // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
         {
             try
@@ -135,34 +123,25 @@ namespace diplom_loskutova.Page
             LoadUserStats();
         }
 
-        // Открывает страницу создания новой записи.
         private void BtnAdd(object sender, RoutedEventArgs e)
         {
             OpenPage(false);
         }
 
-
-        // Адаптер для связанной таблицы 
-        private DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter relatedAdapter = new DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter();
-
-        // Проверяет выбран ли элемент, удаляет его из DataTable, обновляет базу и перезагружает данные.
         private void BtnDelete(object sender, RoutedEventArgs e)
         {
             if (TryGetSelectedRow(out DataRowView selectedRowView))
             {
                 int typeEventId = Convert.ToInt32(selectedRowView["ID_Гражданина"]);
-
-                // Получаем все связанные записи из таблицы мероприятий
                 var relatedRows = relatedAdapter.GetData();
-
-                // Проверяем есть ли связанные записи
                 bool hasRelated = false;
+
                 foreach (var row in relatedRows)
                 {
                     if (row.ID_Гражданина == typeEventId)
                     {
                         hasRelated = true;
-                        break;  // если нашли, дальше проверять нет смысла
+                        break;
                     }
                 }
 
@@ -172,14 +151,14 @@ namespace diplom_loskutova.Page
                         "Подтверждение удаления", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
 
                     if (result != MessageBoxResult.OK)
-                        return; // Отмена удаления
+                        return;
                 }
 
                 else
                 {
                     var result = MessageBox.Show("Вы уверены что хотите удалить запись ?", "Подтверждение удаления", MessageBoxButton.OKCancel, MessageBoxImage.Question);
                     if (result != MessageBoxResult.OK)
-                        return; // Отмена удаления
+                        return; 
                 }
 
                 try
@@ -198,7 +177,6 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Навигирует на страницу редактирования выбранного элемента.
         private void BtnChange(object sender, RoutedEventArgs e)
         {
             NavigatePageSelectedRow();

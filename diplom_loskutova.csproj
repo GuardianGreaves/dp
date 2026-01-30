@@ -136,6 +136,7 @@
     <Reference Include="OpenTK, Version=3.3.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>packages\OpenTK.3.3.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
+    <Reference Include="ReachFramework" />
     <Reference Include="ScottPlot, Version=5.1.57.0, Culture=neutral, PublicKeyToken=86698dc10387c39e, processorArchitecture=MSIL">
       <HintPath>packages\ScottPlot.5.1.57\lib\net462\ScottPlot.dll</HintPath>
     </Reference>
@@ -182,6 +183,7 @@
     <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
     </Reference>
+    <Reference Include="System.Printing" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
@@ -223,7 +225,6 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Class\CitizenManager.cs" />
-    <Compile Include="Class\Class1.cs" />
     <Compile Include="Class\ComboBoxHelper.cs" />
     <Compile Include="Class\DbHelper.cs" />
     <Compile Include="Class\EventsManager.cs" />
@@ -276,9 +277,6 @@
     <Compile Include="Page\Events.xaml.cs">
       <DependentUpon>Events.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Page\Report.xaml.cs">
-      <DependentUpon>Report.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Page\Reports.xaml.cs">
       <DependentUpon>Reports.xaml</DependentUpon>
     </Compile>
@@ -299,6 +297,9 @@
     </Compile>
     <Compile Include="Styles\StackPanel.xaml.cs">
       <DependentUpon>StackPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControlReport.xaml.cs">
+      <DependentUpon>UserControlReport.xaml</DependentUpon>
     </Compile>
     <Compile Include="WindowAuthorization.xaml.cs">
       <DependentUpon>WindowAuthorization.xaml</DependentUpon>
@@ -363,10 +364,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Page\Report.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Page\Reports.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -392,6 +389,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\StackPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControlReport.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -439,7 +440,9 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Image\1.jpg" />
     <Resource Include="Resources\Image\2.jpg" />

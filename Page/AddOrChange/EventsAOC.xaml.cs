@@ -97,7 +97,11 @@ namespace diplom_loskutova.Page.AddOrChange
             string name = TextBoxName.Text;
             string description = TextBoxDescription.Text;
             decimal budget = Convert.ToDecimal(TextBoxBudget.Text);
-            DateTime date = DatePickerDate.DisplayDate;
+            DateTime date = DateTime.Now;
+            if (DatePickerDate.SelectedDate.HasValue)
+            {
+                date = DatePickerDate.SelectedDate.Value;
+            }
 
             if (!TryGetIds(out userId, out typeId))
                 return;

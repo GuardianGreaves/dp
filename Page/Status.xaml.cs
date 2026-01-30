@@ -2,7 +2,6 @@
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
-using System.Web.Security;
 using System.Windows;
 using System.Windows.Input;
 
@@ -18,11 +17,13 @@ namespace diplom_loskutova.Page
         private int pageSize = 5;
         private int totalRecords = 0;
         private string connectionString = ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString;
+        private DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter relatedAdapter = new DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter();
+
         public Status(string _role)
         {
             InitializeComponent();
-            LoadTotalCount();  // Сначала считаем общее количество
-            LoadPageData();    // Загружаем первую страницу
+            LoadTotalCount();
+            LoadPageData();
 
             var visibilityManager = new Class.RoleVisibilityManager(_role);
             if (_role == "1")
@@ -77,11 +78,7 @@ namespace diplom_loskutova.Page
         private void UpdatePagingInfo()
         {
             int shownRecords = statusTable.Rows.Count;
-
-            // Первая запись текущей страницы
             int firstRecord = (currentPage - 1) * pageSize + 1;
-
-            // Последняя запись текущей страницы (не больше общего количества)
             int lastRecord = Math.Min(firstRecord + shownRecords - 1, totalRecords);
 
             tbPageNumber.Text = $"Страница {currentPage}";
@@ -111,7 +108,6 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
         {
             try
@@ -125,52 +121,41 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Открывает страницу создания новой записи.
         private void BtnAdd(object sender, RoutedEventArgs e)
         {
             OpenPage(false);
         }
 
-        // Адаптер для связанной таблицы 
-        private DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter relatedAdapter = new DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter();
 
-        // Проверяет выбран ли элемент, удаляет его из DataTable, обновляет базу и перезагружает данные.
         private void BtnDelete(object sender, RoutedEventArgs e)
         {
             if (TryGetSelectedRow(out DataRowView selectedRowView))
             {
                 int typeEventId = Convert.ToInt32(selectedRowView["ID_Статуса"]);
-
-                // Получаем все связанные записи из таблицы мероприятий
                 var relatedRows = relatedAdapter.GetData();
-
-                // Проверяем есть ли связанные записи
                 bool hasRelated = false;
+
                 foreach (var row in relatedRows)
                 {
                     if (row.ID_Статуса == typeEventId)
                     {
                         hasRelated = true;
-                        break;  // если нашли, дальше проверять нет смысла
+                        break;
                     }
                 }
-
                 if (hasRelated)
                 {
                     var result = MessageBox.Show("Существуют связанные мероприятия. Вы уверены, что хотите удалить эту запись?",
                         "Подтверждение удаления", MessageBoxButton.OKCancel, MessageBoxImage.Warning);
-
                     if (result != MessageBoxResult.OK)
-                        return; // Отмена удаления
+                        return;
                 }
-
                 else
                 {
                     var result = MessageBox.Show("Вы уверены что хотите удалить запись ?", "Подтверждение удаления", MessageBoxButton.OKCancel, MessageBoxImage.Question);
                     if (result != MessageBoxResult.OK)
-                        return; // Отмена удаления
+                        return;
                 }
-
                 try
                 {
                     adapter.Update(db.СТАТУС);
@@ -187,13 +172,11 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Навигирует на страницу редактирования выбранного элемента.
         private void BtnChange(object sender, RoutedEventArgs e)
         {
             NavigatePageSelectedRow();
         }
 
-        // Переходит на страницу редактирования выбранной записи, если она выбрана.
         private void ListViewStatus_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             NavigatePageSelectedRow();
@@ -207,14 +190,12 @@ namespace diplom_loskutova.Page
                 MessageBox.Show("Выберите строку для редактирования.");
         }
 
-        // Универсальный метод для выбора строки из ListView как DataRowView.
         private bool TryGetSelectedRow(out DataRowView selectedRowView)
         {
             selectedRowView = listViewStatus.SelectedItem as DataRowView;
             return selectedRowView != null;
         }
 
-        // Открывает страницу добавления или изменения записи.
         private void OpenPage(bool isChangeOrAdd, DataRowView rowView = null)
         {
             diplom_loskutova.Page.AddOrChange.StatusAOC page;
@@ -230,7 +211,7 @@ namespace diplom_loskutova.Page
 
         private void TextBoxSearchName_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
-            ApplyFilter();                          // Применить фильтр
+            ApplyFilter();                          
         }
 
         private void ApplyFilter()
@@ -243,7 +224,6 @@ namespace diplom_loskutova.Page
 
             string filter = "";
 
-            // Фильтр по ФИО
             var name = TextBoxSearchName.Text.Trim();
             if (!string.IsNullOrEmpty(name))
             {
@@ -259,9 +239,8 @@ namespace diplom_loskutova.Page
 
         private void BtnResetFilter_Click(object sender, RoutedEventArgs e)
         {
-            TextBoxSearchName.Text = "";           // Очистка поиска по логину
-            ApplyFilter();                          // Применить фильтр
+            TextBoxSearchName.Text = "";      
+            ApplyFilter();                          
         }
-
     }
 }

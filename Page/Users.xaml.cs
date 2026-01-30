@@ -16,12 +16,12 @@ namespace diplom_loskutova.Page
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString;
         private DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ПОЛЬЗОВАТЕЛЬTableAdapter();
-        private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
+        private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();
+
         public Users(string _role)
         {
             InitializeComponent();
 
-            // Загружаем роли ПЕРЕД подпиской на Loaded
             LoadData();
             LoadRolesToComboBox();
 
@@ -41,14 +41,14 @@ namespace diplom_loskutova.Page
         private DataTable GetRoleStatistics()
         {
             string sql = @"
-        SELECT 
-            r.ID_Роли,
-            r.Название,
-            ISNULL(COUNT(u.ID_Пользователя), 0) as RoleCount
-        FROM [dbo].[РОЛЬ] r 
-        LEFT JOIN [dbo].[ПОЛЬЗОВАТЕЛЬ] u ON r.ID_Роли = u.ID_Роли 
-        GROUP BY r.ID_Роли, r.Название
-        ORDER BY r.ID_Роли";
+                        SELECT 
+                            r.ID_Роли,
+                            r.Название,
+                            ISNULL(COUNT(u.ID_Пользователя), 0) as RoleCount
+                        FROM [dbo].[РОЛЬ] r 
+                        LEFT JOIN [dbo].[ПОЛЬЗОВАТЕЛЬ] u ON r.ID_Роли = u.ID_Роли 
+                        GROUP BY r.ID_Роли, r.Название
+                        ORDER BY r.ID_Роли";
 
             DataTable dt = new DataTable();
             using (var adapter = new SqlDataAdapter(sql, connectionString))
@@ -58,20 +58,14 @@ namespace diplom_loskutova.Page
             return dt;
         }
 
-
         private void LoadUserStats()
         {            
-            // Вызываем метод для загрузки статистики ролей
-            var roleStats = GetRoleStatistics(); // Сохраняем в локальную переменную
+            var roleStats = GetRoleStatistics();
 
             try
             {
-                // Загружаем ПОЛЬЗОВАТЕЛЬ
                 adapter.FillBy(db.ПОЛЬЗОВАТЕЛЬ);
-
-                // 1. Всего пользователей
                 tbTotalUsers.Text = db.ПОЛЬЗОВАТЕЛЬ.Count.ToString();
-
                 listViewUsers.ItemsSource = db.ПОЛЬЗОВАТЕЛЬ.DefaultView;
             }
             catch (Exception ex)
@@ -80,7 +74,6 @@ namespace diplom_loskutova.Page
             }
             Loaded += (s, e) =>
             {
-                // Используем загруженные данные
                 double[] values = roleStats.AsEnumerable()
                     .Select(row => Convert.ToDouble(row["RoleCount"]))
                     .ToArray();
@@ -89,7 +82,6 @@ namespace diplom_loskutova.Page
                     .Select(row => row["Название"].ToString())
                     .ToArray();
 
-                // Создаем круговую диаграмму
                 var pie = WpfPlot1.Plot.Add.Pie(values);
                 pie.ExplodeFraction = .1;
                 pie.SliceLabelDistance = 0.5;
@@ -115,7 +107,6 @@ namespace diplom_loskutova.Page
             };
         }
 
-        // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
         {
             try
@@ -130,13 +121,11 @@ namespace diplom_loskutova.Page
             LoadUserStats();
         }
 
-        // Открывает страницу создания новой записи.
         private void BtnAdd(object sender, RoutedEventArgs e)
         {
             OpenPage(false);
         }
 
-        // Проверяет выбран ли элемент, удаляет его из DataTable, обновляет базу и перезагружает данные.
         private void BtnDelete(object sender, RoutedEventArgs e)
         {
             if (TryGetSelectedRow(out DataRowView selectedRowView))
@@ -163,13 +152,11 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Навигирует на страницу редактирования выбранного элемента.
         private void BtnChange(object sender, RoutedEventArgs e)
         {
             NavigatePageSelectedRow();
         }
 
-        // Переходит на страницу редактирования выбранной записи, если она выбрана.
         private void ListViewStatus_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             NavigatePageSelectedRow();
@@ -183,14 +170,12 @@ namespace diplom_loskutova.Page
                 MessageBox.Show("Выберите строку для редактирования.");
         }
 
-        // Универсальный метод для выбора строки из ListView как DataRowView.
         private bool TryGetSelectedRow(out DataRowView selectedRowView)
         {
             selectedRowView = listViewUsers.SelectedItem as DataRowView;
             return selectedRowView != null;
         }
 
-        // Открывает страницу добавления или изменения записи.
         private void OpenPage(bool isChangeOrAdd, DataRowView rowView = null)
         {
             diplom_loskutova.Page.AddOrChange.UsersAOC page;
@@ -229,13 +214,11 @@ namespace diplom_loskutova.Page
 
             string filter = "";
 
-            // Фильтр по выбранной роли
             if (ComboBoxSearchRole.SelectedValue != null)
             {
                 filter += $"ID_Роли = {ComboBoxSearchRole.SelectedValue}";
             }
 
-            // Фильтр по ФИО
             var fio = TextBoxSearchFIO.Text.Trim();
             if (!string.IsNullOrEmpty(fio))
             {
@@ -244,7 +227,6 @@ namespace diplom_loskutova.Page
                 filter += $"(Фамилия LIKE '%{fio}%' OR Имя LIKE '%{fio}%' OR Отчество LIKE '%{fio}%')";
             }
 
-            // Фильтр по логину
             var login = TextBoxSearchLogin.Text.Trim();
             if (!string.IsNullOrEmpty(login))
             {
@@ -260,10 +242,10 @@ namespace diplom_loskutova.Page
 
         private void BtnResetFilter_Click(object sender, RoutedEventArgs e)
         {
-            ComboBoxSearchRole.SelectedIndex = -1; // Сброс выбора роли
-            TextBoxSearchFIO.Text = "";             // Очистка поиска по ФИО
-            TextBoxSearchLogin.Text = "";           // Очистка поиска по логину
-            ApplyFilter();                          // Применить фильтр 
+            ComboBoxSearchRole.SelectedIndex = -1;
+            TextBoxSearchFIO.Text = "";             
+            TextBoxSearchLogin.Text = "";           
+            ApplyFilter();                         
         }
 
         private void TextBoxSearchFIO_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -275,6 +257,5 @@ namespace diplom_loskutova.Page
         {
             ApplyFilter();
         }
-
     }
 }

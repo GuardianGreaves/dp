@@ -6,7 +6,6 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Web.Security;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Forms;
@@ -18,20 +17,17 @@ namespace diplom_loskutova.Page
     public partial class Applications : System.Windows.Controls.Page
     {
         private string connectionString = ConfigurationManager.ConnectionStrings["diplom_loskutova.Properties.Settings.DP_2025_LoskutovaConnectionString"].ConnectionString;
-
         private DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter adapter = new DP_2025_LoskutovaDataSetTableAdapters.ЗАЯВКАTableAdapter();
-        private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();   // Объект для работы с данными из базы (DataSet)
+        private DP_2025_LoskutovaDataSet db = new DP_2025_LoskutovaDataSet();
+
         public Applications(string _role)
         {
             InitializeComponent();
+
             LoadData();
             LoadToComboBox();
             LoadApplicationStats();
-
-            // Настраиваем видимость кнопок (убрали дублирование)
             SetupRoleVisibility(_role);
-
-            // Подписываемся на Loaded и строим диаграмму статусов заявок
             Loaded += (s, e) => BuildApplicationStatusChart();
         }
 
@@ -53,7 +49,6 @@ namespace diplom_loskutova.Page
         {
             try
             {
-                // Загружаем ПОЛЬЗОВАТЕЛЬ
                 adapter.FillBy(db.ЗАЯВКА);
                 tbTotalUsers.Text = db.ЗАЯВКА.Count.ToString();
                 listViewApplication.ItemsSource = db.ЗАЯВКА.DefaultView;
@@ -70,23 +65,14 @@ namespace diplom_loskutova.Page
 
             if (statusStats.Rows.Count == 0)
                 return;
-
-            // Очищаем график
             WpfPlot1.Plot.Clear();
-
-            // Динамически извлекаем данные
             double[] values = statusStats.AsEnumerable()
                 .Select(row => Convert.ToDouble(row["StatusCount"]))
                 .ToArray();
-
             string[] labels = statusStats.AsEnumerable()
                 .Select(row => row["StatusName"].ToString())
                 .ToArray();
-
-            // Создаем позиции для столбцов (1, 2, 3...)
             double[] positions = Enumerable.Range(1, values.Length).Select(x => (double)x).ToArray();
-
-            // Добавляем столбцы динамически
             for (int i = 0; i < values.Length; i++)
             {
                 double[] xs = { positions[i] };
@@ -95,14 +81,11 @@ namespace diplom_loskutova.Page
                 var bar = WpfPlot1.Plot.Add.Bars(xs, ys);
                 bar.LegendText = labels[i];
             }
-
-            // Настройка графика
             WpfPlot1.Plot.Title("Распределение заявок по статусам");
             WpfPlot1.Plot.ShowLegend(Alignment.UpperRight);
             WpfPlot1.Plot.Axes.Margins(bottom: 0.1);
             WpfPlot1.Plot.Axes.SetLimitsY(0, values.Max() * 1.1);
 
-            // Подписи осей
             WpfPlot1.Plot.Axes.Bottom.Label.Text = "Статусы заявок";
             WpfPlot1.Plot.Axes.Left.Label.Text = "Количество заявок";
 
@@ -111,13 +94,13 @@ namespace diplom_loskutova.Page
         private DataTable GetApplicationStatusStatistics()
         {
             string sql = @"
-        SELECT 
-            s.Название as StatusName,
-            ISNULL(COUNT(a.ID_Заявки), 0) as StatusCount
-        FROM [dbo].[СТАТУС] s
-        LEFT JOIN [dbo].[ЗАЯВКА] a ON s.ID_Статуса = a.ID_Статуса
-        GROUP BY s.ID_Статуса, s.Название
-        ORDER BY s.ID_Статуса";
+                        SELECT 
+                            s.Название as StatusName,
+                            ISNULL(COUNT(a.ID_Заявки), 0) as StatusCount
+                        FROM [dbo].[СТАТУС] s
+                        LEFT JOIN [dbo].[ЗАЯВКА] a ON s.ID_Статуса = a.ID_Статуса
+                        GROUP BY s.ID_Статуса, s.Название
+                        ORDER BY s.ID_Статуса";
 
             DataTable dt = new DataTable();
             using (var adapter = new SqlDataAdapter(sql, connectionString))
@@ -127,8 +110,6 @@ namespace diplom_loskutova.Page
             return dt;
         }
 
-
-        // Загружает данные из базы в DataSet и привязывает к ListView.
         private void LoadData()
         {
             try
@@ -142,13 +123,11 @@ namespace diplom_loskutova.Page
             }
         }
 
-        // Открывает страницу создания новой записи.
         private void BtnAdd(object sender, RoutedEventArgs e)
         {
             OpenPage(false);
         }
 
-        // Проверяет выбран ли элемент, удаляет его из DataTable, обновляет базу и перезагружает данные.
         private void BtnDelete(object sender, RoutedEventArgs e)
         {
             if (TryGetSelectedRow(out DataRowView selectedRowView))
