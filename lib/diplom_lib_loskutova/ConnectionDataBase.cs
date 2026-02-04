@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -12,7 +13,8 @@ namespace diplom_lib_loskutova
 
         public ConnectionDataBase(string customConnectionString = null)
         {
-            connectionString = customConnectionString ?? "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DP_2025_Loskutova;Integrated Security=True";
+            connectionString = ConfigurationManager.ConnectionStrings["DP_2025_LoskutovaConnectionString"]?.ConnectionString
+                ?? "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=DP_2025_Loskutova;Integrated Security=True";
             connection = new SqlConnection(connectionString);
         }
 
