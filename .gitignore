@@ -48,3 +48,11 @@ TestResults/
 # *.xsd - нужен для DataSet
 # *.xss *.xsc *.designer.cs - генерируемые файлы DataSet
 # LoskutovaDatabaseDataSet* - ваш конкретный DataSet
+
+# ✅ Сохраняем папки Image везде
+![Dd]ebug/**/Image/
+![Dd]elease/**/Image/
+!bin/[Dd]ebug/Image/
+!bin/[Rr]elease/Image/
+!bin/x64/[Dd]ebug/Image/
+!bin/x64/[Rr]elease/Image/

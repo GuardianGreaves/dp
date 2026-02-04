@@ -1,6 +1,8 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -56,10 +58,42 @@ namespace diplom_loskutova.Page.AddOrChange
             TextBoxName.Text = currentRow["Имя"].ToString();
             TextBoxSurname.Text = currentRow["Фамилия"].ToString();
             TextBoxPatronymic.Text = currentRow["Отчество"].ToString();
-            fileName = currentRow["Фото"].ToString();
-            fullPath = System.IO.Path.Combine(baseDirectory, photosSubdirectory, fileName);
-            PhotoImage.Source = new BitmapImage(new Uri(fullPath, UriKind.Absolute));
+
+            // ✅ Загрузка фото из БД с проверкой двух путей
+            fileName = currentRow["Фото"].ToString(); // "photo_202602041234567.jpg"
+
+            photo(fileName);
+
             NamePage.Text = $"Редактирование записи №{Convert.ToInt32(currentRow["ID_Гражданина"])}";
+        }
+
+        public void photo(string fileName)
+        {
+            // 1. Пробуем путь проекта
+            string projectPath = Path.Combine(AppContext.BaseDirectory + "\\Image-citizen", fileName);
+            if (File.Exists(projectPath))
+            {
+                PhotoImage.Source = new BitmapImage(new Uri(projectPath, UriKind.Absolute));
+            }
+            // 2. Если нет - пробуем рабочий стол
+            else
+            {
+                string desktopPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    "Image-citizen",
+                    fileName
+                );
+
+                if (File.Exists(desktopPath))
+                {
+                    PhotoImage.Source = new BitmapImage(new Uri(desktopPath, UriKind.Absolute));
+                }
+                else
+                {
+                    PhotoImage.Source = null;
+                    // MessageBox.Show($"Фото не найдено:\n{projectPath}\n{desktopPath}"); // Отладка
+                }
+            }
         }
 
         // Проверка на дубликат записи
@@ -146,39 +180,89 @@ namespace diplom_loskutova.Page.AddOrChange
 
         private void BtnSelectPhoto(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image Files (*.jpg; *.png; *.bmp)|*.jpg; *.png; *.bmp|All files (*.*)|*.*";
+            // Открываем диалог выбора файла
+            OpenFileDialog openFileDialog = new OpenFileDialog()
+            {
+                Title = "Выберите изображение гражданина",
+                Filter = "Изображения|*.jpg;*.jpeg;*.png;*.bmp;*.gif|Все файлы|*.*"
+            };
 
             if (openFileDialog.ShowDialog() == true)
             {
-                selectedPhotoFullPath = openFileDialog.FileName;
-
-                string destinationFolder = System.IO.Path.Combine(baseDirectory, photosSubdirectory);
-                if (!Directory.Exists(destinationFolder))
-                {
-                    Directory.CreateDirectory(destinationFolder);
-                }
-
-                // Создаем уникальное имя файла с датой-временем
-                string ext = System.IO.Path.GetExtension(selectedPhotoFullPath);
-                fileName = $"photo_{DateTime.Now:yyyyMMddHHmmssfff}{ext}";
-
-                string destinationPath = System.IO.Path.Combine(destinationFolder, fileName);
+                string sourceFile = openFileDialog.FileName;
+                string projectFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Image-citizen");
+                string desktopFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "Image-citizen");
+                string targetFolder = null;
+                string targetFile = null;
 
                 try
                 {
-                    File.Copy(selectedPhotoFullPath, destinationPath, true);
+                    // Пробуем создать/использовать папку в проекте
+                    if (!Directory.Exists(projectFolder))
+                    {
+                        Directory.CreateDirectory(projectFolder);
+                    }
 
-                    PhotoImage.Source = new BitmapImage(new Uri(destinationPath));
+                    // Создаем уникальное имя файла с timestamp
+                    string fileNameWithoutExt = Path.GetFileNameWithoutExtension(sourceFile);
+                    string fileExt = Path.GetExtension(sourceFile);
+                    string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff"); // 20260204_152323_456
+                    string uniqueFileName = $"{fileNameWithoutExt}_{timestamp}{fileExt}";
+                    targetFile = Path.Combine(projectFolder, uniqueFileName);
+                    targetFolder = projectFolder;
 
-                    // Сохраняйте destinationPath (или только relative path) в запись/базу
+                    // Копируем файл
+                    File.Copy(sourceFile, targetFile, true);
+
+                    MessageBox.Show($"Файл успешно скопирован в проект:\n{targetFile}", "Успех",
+                                  MessageBoxButton.OK, MessageBoxImage.Information);
+                    
+                    SavePhotoToDatabase(uniqueFileName);
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    try
+                    {
+                        // Если нет прав на папку проекта, используем рабочий стол
+                        if (!Directory.Exists(desktopFolder))
+                        {
+                            Directory.CreateDirectory(desktopFolder);
+                        }
+
+                        string fileNameWithoutExt = Path.GetFileNameWithoutExtension(sourceFile);
+                        string fileExt = Path.GetExtension(sourceFile);
+                        string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss_fff");
+                        string uniqueFileName = $"{fileNameWithoutExt}_{timestamp}{fileExt}";
+                        targetFile = Path.Combine(desktopFolder, uniqueFileName);
+                        targetFolder = desktopFolder;
+
+                        File.Copy(sourceFile, targetFile, true);
+
+                        MessageBox.Show($"Файл скопирован на рабочий стол:\n{targetFile}", "Сохранено на Рабочий стол",
+                                      MessageBoxButton.OK, MessageBoxImage.Information);
+
+                        SavePhotoToDatabase(uniqueFileName);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Ошибка копирования: {ex.Message}", "Ошибка",
+                                      MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Ошибка при копировании или загрузке изображения: {ex.Message}",
-                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Неожиданная ошибка: {ex.Message}", "Ошибка",
+                                  MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+
         }
+
+        private void SavePhotoToDatabase(string relativePath)
+        {
+            fileName = relativePath;
+            photo(relativePath);
+        }
+
     }
 }

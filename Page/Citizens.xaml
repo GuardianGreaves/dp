@@ -55,7 +55,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <ListView x:Name="listViewCitizen" MouseDoubleClick="ListViewStatus_MouseDoubleClick" Grid.Column="0" ItemsSource="{Binding}">
+            <ListView x:Name="listViewCitizen" MouseDoubleClick="ListViewStatus_MouseDoubleClick" Grid.Column="0" ItemsSource="{Binding}" SelectionChanged="listViewCitizen_SelectionChanged">
                 <ListView.View>
                     <GridView>
                         <GridViewColumn Header="ID" DisplayMemberBinding="{Binding [ID_Гражданина]}"/>
@@ -78,26 +78,35 @@
 
                 <StackPanel Grid.Row="0" Background="Wheat">
                     <Grid Margin="5">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
 
-                        <TextBlock Grid.Row="0" Text="Поиск по дате рождения"/>
-                        <DatePicker Grid.Row="1" x:Name="DatePickerSearch" SelectedDateChanged="DatePickerSearch_SelectedDateChanged"/>
+                        <Grid Grid.Column="1">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
 
-                        <TextBlock Grid.Row="2" Text="Поиск по телефону"/>
-                        <TextBox Grid.Row="3" x:Name="TextBoxSearchTelephone" TextChanged="TextBoxSearchTelephone_TextChanged"/>
+                            <TextBlock Grid.Row="0" Text="Поиск по дате рождения"/>
+                            <DatePicker Grid.Row="1" x:Name="DatePickerSearch" SelectedDateChanged="DatePickerSearch_SelectedDateChanged"/>
 
-                        <TextBlock Grid.Row="4" Text="Поиск по ФИО"/>
-                        <TextBox Grid.Row="5" x:Name="TextBoxSearchFIO" TextChanged="TextBoxSearchFIO_TextChanged"/>
+                            <TextBlock Grid.Row="2" Text="Поиск по телефону"/>
+                            <TextBox Grid.Row="3" x:Name="TextBoxSearchTelephone" TextChanged="TextBoxSearchTelephone_TextChanged"/>
 
-                        <Button Margin="0 10 0 0" Grid.Row="6" Content="Сбросить фильтр" Click="BtnResetFilter_Click" />
+                            <TextBlock Grid.Row="4" Text="Поиск по ФИО"/>
+                            <TextBox Grid.Row="5" x:Name="TextBoxSearchFIO" TextChanged="TextBoxSearchFIO_TextChanged"/>
+
+                            <Button Margin="0 10 0 0" Grid.Row="6" Content="Сбросить фильтр" Click="BtnResetFilter_Click" />
+
+                        </Grid>
+                        <Image Grid.Column="0" x:Name="PhotoImage" Margin="0 0 5 0" Stretch="Uniform"/>
                     </Grid>
                 </StackPanel>
                 <TextBlock  Grid.Row="1" Text="Распределение пользователей по возрасту" TextAlignment="Center" FontSize="14"/>

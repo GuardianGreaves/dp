@@ -3,10 +3,12 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 
 namespace diplom_loskutova.Page
 {
@@ -279,6 +281,41 @@ namespace diplom_loskutova.Page
         private void TextBoxSearchFIO_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyFilter();
+        }
+
+        public void photo(string fileName)
+        {
+            // 1. Пробуем путь проекта
+            string projectPath = Path.Combine(AppContext.BaseDirectory + "\\Image-citizen", fileName);
+            if (File.Exists(projectPath))
+            {
+                PhotoImage.Source = new BitmapImage(new Uri(projectPath, UriKind.Absolute));
+            }
+            // 2. Если нет - пробуем рабочий стол
+            else
+            {
+                string desktopPath = Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.Desktop),
+                    "Image-citizen",
+                    fileName
+                );
+
+                if (File.Exists(desktopPath))
+                {
+                    PhotoImage.Source = new BitmapImage(new Uri(desktopPath, UriKind.Absolute));
+                }
+                else
+                {
+                    PhotoImage.Source = null;
+                    // MessageBox.Show($"Фото не найдено:\n{projectPath}\n{desktopPath}"); // Отладка
+                }
+            }
+        }
+
+        private void listViewCitizen_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (TryGetSelectedRow(out DataRowView selectedRowView))
+                photo(selectedRowView["Фото"].ToString());
         }
     }
 }
